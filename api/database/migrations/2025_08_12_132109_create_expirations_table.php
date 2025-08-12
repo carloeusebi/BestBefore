@@ -11,7 +11,7 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('expirations', function (Blueprint $table) {
+        Schema::create('expirations', function (Blueprint $table): void {
             $table->ulid('id');
             $table->foreignUuid('user_id')->constrained('users');
             $table->foreignId('product_id')->constrained('products');

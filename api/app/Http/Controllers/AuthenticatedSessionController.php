@@ -41,8 +41,6 @@ final class AuthenticatedSessionController extends Controller
                 'user' => $user->toResource(),
             ]);
         } catch (Throwable $e) {
-            report($e);
-
             return Response::apiError($e->getMessage(), 500);
         }
     }

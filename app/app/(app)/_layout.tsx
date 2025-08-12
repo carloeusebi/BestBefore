@@ -2,7 +2,6 @@ import { Redirect, Stack } from 'expo-router';
 import { useSession } from '@/context/auth-context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { ActivityIndicator, View } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AppLayout() {
     const { session, isLoading } = useSession();

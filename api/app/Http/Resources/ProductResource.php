@@ -12,7 +12,7 @@ use Illuminate\Http\Resources\Json\JsonResource;
 final class ProductResource extends JsonResource
 {
     /**
-     * @return array<string, string>
+     * @return array<string, mixed>
      */
     public function toArray(Request $request): array
     {
@@ -20,7 +20,7 @@ final class ProductResource extends JsonResource
             'id' => $this->id,
             'name' => $this->name,
             'description' => $this->description,
-            'barcode' => $this->barcode->barcode,
+            'barcode' => $this->barcode?->barcode,
             'brand' => $this->brand,
         ];
     }

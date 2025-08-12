@@ -14,16 +14,20 @@ use function Pest\Laravel\assertDatabaseCount;
 use function Pest\Laravel\assertDatabaseMissing;
 use function Pest\Laravel\postJson;
 
-it('creates a new user', function () {
+it('creates a new user', function (): void {
     $token = Str::random(100);
 
-    $provider = mock(Provider::class, function (MockInterface $mock) use ($token, &$name, &$email, &$avatar) {
+    $provider = mock(Provider::class, function (MockInterface $mock) use ($token, &$name, &$email, &$avatar): void {
         $socialiteUser = new SocialiteUser;
 
         $socialiteUser->id = Str::random(10);
-        $socialiteUser->name = $name = fake()->name();
-        $socialiteUser->email = $email = fake()->unique()->safeEmail();
-        $socialiteUser->avatar = $avatar = fake()->imageUrl();
+        $socialiteUser->name = fake()->name();
+
+        $name = $socialiteUser->name;
+        $socialiteUser->email = fake()->unique()->safeEmail();
+        $email = $socialiteUser->email;
+        $socialiteUser->avatar = fake()->imageUrl();
+        $avatar = $socialiteUser->avatar;
 
         $mock->shouldReceive('userFromToken')->with($token)->andReturn($socialiteUser);
     });
@@ -32,7 +36,7 @@ it('creates a new user', function () {
 
     $response = postJson(route('login'), ['idToken' => $token])->assertOk();
 
-    $response->assertJson(fn (AssertableJson $json) => $json
+    $response->assertJson(fn (AssertableJson $json): AssertableJson => $json
         ->has('token')
         ->where('user.name', $name)
         ->where('user.email', $email)
@@ -46,11 +50,11 @@ it('creates a new user', function () {
     assertAuthenticatedAs($user);
 });
 
-it('authenticates a user if already existing', function () {
+it('authenticates a user if already existing', function (): void {
     $user = User::factory()->create();
     $token = Str::random(100);
 
-    $provider = mock(Provider::class, function (MockInterface $mock) use ($user, $token) {
+    $provider = mock(Provider::class, function (MockInterface $mock) use ($user, $token): void {
         $socialiteUser = new SocialiteUser;
 
         $socialiteUser->id = $user->google_id;
@@ -68,9 +72,9 @@ it('authenticates a user if already existing', function () {
     assertAuthenticatedAs($user);
 });
 
-it('handles errors', function () {
+it('handles errors', function (): void {
     $token = Str::random(100);
-    $provider = mock(Provider::class, function (MockInterface $mock) use ($token) {
+    $provider = mock(Provider::class, function (MockInterface $mock) use ($token): void {
         $mock->shouldReceive('userFromToken')->with($token)->andThrow(new Exception('Something went wrong'));
     });
 
@@ -78,12 +82,12 @@ it('handles errors', function () {
     $response = postJson(route('login'), ['idToken' => $token]);
 
     $response->assertStatus(500)
-        ->assertJson(fn (AssertableJson $json) => $json
+        ->assertJson(fn (AssertableJson $json): AssertableJson => $json
             ->where('error', 'Something went wrong')
         );
 });
 
-it('can logout the user', function () {
+it('can logout the user', function (): void {
     $user = User::factory()->create();
     $token = $user->createToken('auth-token')->plainTextToken;
 

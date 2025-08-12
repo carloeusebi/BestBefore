@@ -19,6 +19,7 @@ final class UserFactory extends Factory
             'google_id' => fake()->unique()->uuid(),
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
+            'avatar' => fake()->imageUrl(),
             'remember_token' => Str::random(10),
         ];
     }

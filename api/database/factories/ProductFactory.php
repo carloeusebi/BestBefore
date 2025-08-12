@@ -9,6 +9,9 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Product>
+ */
 final class ProductFactory extends Factory
 {
     protected $model = Product::class;
@@ -16,9 +19,9 @@ final class ProductFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => $this->faker->words(asText: true),
-            'description' => $this->faker->text(),
-            'brand' => $this->faker->company(),
+            'name' => fake()->words(asText: true),
+            'description' => fake()->text(),
+            'brand' => fake()->company(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
 

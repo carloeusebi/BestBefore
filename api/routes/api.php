@@ -18,9 +18,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/auth/user', AuthenticatedUserController::class)->name('user');
 
-    Route::apiResource('products', ProductController::class)->names('products');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
 
-    Route::get('/barcodes/{barcode}/products', [BarcodeProductController::class, 'index'])->name('barcodes.products.index');
-    Route::post('/barcodes/{barcode}/products', [BarcodeProductController::class, 'store'])->name('barcodes.products.store');
-
+    Route::get('/barcodes/{barcode}/products', BarcodeProductController::class)->name('barcodes.products.index');
 });

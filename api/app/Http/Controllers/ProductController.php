@@ -5,37 +5,24 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Http\Requests\ProductRequest;
-use App\Http\Resources\ProductResource;
+use App\Models\Barcode;
 use App\Models\Product;
+use Illuminate\Http\JsonResponse;
 
 final class ProductController extends Controller
 {
-    public function index()
+    public function store(ProductRequest $request): JsonResponse
     {
-        return ProductResource::collection(Product::all());
-    }
+        $product = new Product($request->only(['name', 'description', 'brand']));
 
-    public function store(ProductRequest $request)
-    {
-        return new ProductResource(Product::create($request->validated()));
-    }
+        if ($request->has('barcode')) {
+            $barcode = Barcode::firstOrCreate(['barcode' => $request->input('barcode')]);
 
-    public function show(Product $product)
-    {
-        return new ProductResource($product);
-    }
+            $product->barcode()->associate($barcode);
+        }
 
-    public function update(ProductRequest $request, Product $product)
-    {
-        $product->update($request->validated());
+        $product->save();
 
-        return new ProductResource($product);
-    }
-
-    public function destroy(Product $product)
-    {
-        $product->delete();
-
-        return response()->json();
+        return response()->json($product->toResource(), 201);
     }
 }

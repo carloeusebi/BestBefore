@@ -12,7 +12,8 @@ it('returns user data', function (): void {
 
     $response = getJson(route('user'))->assertOk();
 
-    $response->assertJson(fn (AssertableJson $json) => $json
+    $response->assertJson(fn (AssertableJson $json): AssertableJson => $json
+        ->where('id', $user->id)
         ->where('name', $user->name)
         ->where('email', $user->email)
         ->where('avatar', $user->avatar)

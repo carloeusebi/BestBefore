@@ -8,6 +8,9 @@ use App\Models\Barcode;
 use Carbon\CarbonImmutable;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
+/**
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Barcode>
+ */
 final class BarcodeFactory extends Factory
 {
     protected $model = Barcode::class;

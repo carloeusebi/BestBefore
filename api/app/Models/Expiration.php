@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models;
 
 use App\Enums\NotificationMethod;
+use Database\Factories\ExpirationFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,7 +14,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 final class Expiration extends Model
 {
-    use HasFactory, HasUlids, SoftDeletes;
+    /** @use HasFactory<ExpirationFactory> */
+    use HasFactory;
+
+    use HasUlids;
+    use SoftDeletes;
 
     /**
      * @return BelongsTo<User, $this>

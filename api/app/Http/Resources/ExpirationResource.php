@@ -8,8 +8,12 @@ use App\Models\Expiration;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-/** @mixin Expiration */ final class ExpirationResource extends JsonResource
+/** @mixin Expiration */
+final class ExpirationResource extends JsonResource
 {
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(Request $request): array
     {
         return [

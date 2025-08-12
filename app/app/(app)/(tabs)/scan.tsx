@@ -1,21 +1,28 @@
-import { Text, View, StyleSheet } from 'react-native';
+import { Text, View, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
 import { useEffect, useState } from 'react';
 import { CameraView, useCameraPermissions, BarcodeScanningResult } from 'expo-camera';
 import { Button } from '@/components/button';
 import { useIsFocused } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import productsService from '@/services/products-service';
+import { Product } from '@/types';
+import { router } from 'expo-router';
+import { isAxiosError } from 'axios';
 
 export default function Scan() {
     const [permission, requestPermission] = useCameraPermissions();
     const [scanned, setScanned] = useState(false);
     const [barcode, setBarcode] = useState<string>('');
     const [isCameraActive, setIsCameraActive] = useState(true);
+    const [products, setProducts] = useState<Product[] | null>(null);
+    const [showChoice, setShowChoice] = useState(false);
+    const [showNoProducts, setShowNoProducts] = useState(false);
     const isFocused = useIsFocused();
 
     useEffect(() => {
         setIsCameraActive(isFocused);
         return () => {
+            setScanned(false);
             setIsCameraActive(false);
         };
     }, [isFocused]);
@@ -33,22 +40,50 @@ export default function Scan() {
         );
     }
 
+    const resetScan = () => {
+        setScanned(false);
+        setBarcode('');
+        setProducts(null);
+        setShowChoice(false);
+        setShowNoProducts(false);
+    };
+
     const onBarcodeScanned = async (result: BarcodeScanningResult) => {
         if (scanned) return;
 
         setScanned(true);
-        setBarcode(result.data);
+
+        const scannedCode = result.data;
+        setBarcode(scannedCode);
 
         try {
-            const product = await productsService.findProduct(barcode);
-            console.log(product);
+            const found = await productsService.findProductsByBarcode(scannedCode);
+            setProducts(found);
+            if (found && found.length > 0) {
+                setShowChoice(true);
+            } else {
+                setShowNoProducts(true);
+            }
         } catch (error) {
-            console.error(error);
+            if (isAxiosError(error) && error.response?.status !== 404) {
+                console.error(error);
+                Alert.alert('Si è verificato un errore inatteso.');
+            }
+            setShowNoProducts(true);
         }
     };
 
+    const onChooseProduct = (product: Product) => {
+        console.log('Selected product:', product);
+        setShowChoice(false);
+    };
+
+    const onCreateNewProduct = () => {
+        router.push({ pathname: '/(app)/new-product', params: barcode ? { barcode } : undefined });
+    };
+
     return (
-        <SafeAreaView edges={['top']} style={styles.container}>
+        <SafeAreaView edges={['top']} className="flex-1 justify-center">
             {isCameraActive && (
                 <CameraView
                     style={styles.camera}
@@ -58,10 +93,31 @@ export default function Scan() {
                     }}
                     onBarcodeScanned={onBarcodeScanned}
                 >
-                    {scanned && (
-                        <View style={styles.scannedContainer}>
-                            <Text style={styles.scannedText}>Barcode: {barcode}</Text>
-                            <Button onPress={() => setScanned(false)} title="Tap to Scan Again" />
+                    {showChoice && products && products.length > 0 && (
+                        <View className="absolute bottom-[100px] left-5 right-5 max-h-[80%] gap-2 rounded-lg bg-white/95 p-4">
+                            <Text className="text-lg font-semibold text-black">Seleziona il prodotto</Text>
+                            <Text>{barcode}</Text>
+                            <ScrollView className="my-2">
+                                {products.map((p) => (
+                                    <TouchableOpacity key={p.id} onPress={() => onChooseProduct(p)}>
+                                        <View key={p.id} className="mb-2 rounded-lg bg-black/5 p-3">
+                                            <Text className="mb-1 text-base font-medium text-black">{p.name}</Text>
+                                            {p.brand ? <Text className="mb-2 text-xs text-gray-700">{p.brand}</Text> : null}
+                                        </View>
+                                    </TouchableOpacity>
+                                ))}
+                            </ScrollView>
+                            <Button variant="primary" title="Crea nuovo prodotto con questo Barcode" onPress={onCreateNewProduct} />
+                            <Button variant="secondary" title="Riprova" onPress={resetScan} />
+                        </View>
+                    )}
+
+                    {showNoProducts && (
+                        <View className="absolute bottom-[100px] left-5 right-5 max-h-[60%] gap-2 rounded-lg bg-white/95 p-4">
+                            <Text className="mb-2 text-lg font-semibold text-black">Nessun prodotto trovato</Text>
+                            <Text className="mb-3 text-sm text-black">Vuoi creare un nuovo prodotto per il barcode {barcode}?</Text>
+                            <Button variant="primary" title="Crea nuovo prodotto" onPress={onCreateNewProduct} />
+                            <Button variant="secondary" title="Riprova" onPress={resetScan} />
                         </View>
                     )}
                 </CameraView>
