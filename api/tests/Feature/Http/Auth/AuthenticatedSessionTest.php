@@ -33,10 +33,10 @@ it('creates a new user', function () {
     $response = postJson(route('login'), ['idToken' => $token])->assertOk();
 
     $response->assertJson(fn (AssertableJson $json) => $json
-        ->has('data.token')
-        ->where('data.user.name', $name)
-        ->where('data.user.email', $email)
-        ->where('data.user.avatar', $avatar)
+        ->has('token')
+        ->where('user.name', $name)
+        ->where('user.email', $email)
+        ->where('user.avatar', $avatar)
     );
 
     expect($user = User::where('email', $email)->first())

@@ -12,9 +12,9 @@ return new class extends Migration
     {
         Schema::create('products', function (Blueprint $table) {
             $table->ulid('id');
+            $table->foreignId('barcode_id')->nullable()->constrained('barcodes');
             $table->string('name');
             $table->string('description')->nullable();
-            $table->string('barcode')->nullable();
             $table->string('brand')->nullable();
             $table->timestamps();
         });

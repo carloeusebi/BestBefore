@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Models\Barcode;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Str;
 
 final class ProductFactory extends Factory
 {
@@ -18,10 +18,11 @@ final class ProductFactory extends Factory
         return [
             'name' => $this->faker->words(asText: true),
             'description' => $this->faker->text(),
-            'barcode' => Str::random(14),
             'brand' => $this->faker->company(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
+
+            'barcode_id' => Barcode::factory(),
         ];
     }
 }

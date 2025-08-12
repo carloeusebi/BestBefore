@@ -2,11 +2,6 @@ import axios from 'axios';
 import { API_BASE_URL } from '@/config/env';
 import * as SecureStore from 'expo-secure-store';
 
-export interface ApiResponse<T> {
-    data: T;
-    message?: string;
-}
-
 const axiosInstance = axios.create({
     baseURL: API_BASE_URL,
     headers: {

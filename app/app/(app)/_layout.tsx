@@ -2,6 +2,7 @@ import { Redirect, Stack } from 'expo-router';
 import { useSession } from '@/context/auth-context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { ActivityIndicator, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function AppLayout() {
     const { session, isLoading } = useSession();
@@ -35,10 +36,6 @@ export default function AppLayout() {
             }}
         >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-            <Stack.Screen name="home" options={{ headerTitle: 'Home' }} />
-            <Stack.Screen name="scan" options={{ headerTitle: 'Scansiona' }} />
-            <Stack.Screen name="new" options={{ headerTitle: 'Aggiungi' }} />
-            <Stack.Screen name="profile" options={{ headerTitle: 'Profilo' }} />
         </Stack>
     );
 }

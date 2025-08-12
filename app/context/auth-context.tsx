@@ -1,15 +1,9 @@
 import { createContext, PropsWithChildren, useContext, useEffect } from 'react';
 import { useStorageState } from '@/hooks/use-storage-state';
-import axiosInstance, { ApiResponse } from '@/config/axios-config';
+import axiosInstance from '@/config/axios-config';
 import { router } from 'expo-router';
 import { isAxiosError } from 'axios';
-
-export interface User {
-    id: string;
-    name: string;
-    email: string;
-    avatar: string;
-}
+import { User } from '@/types';
 
 interface AuthContextType {
     signIn: (token: string, user: User) => void;
@@ -67,13 +61,13 @@ export function SessionProvider({ children }: PropsWithChildren) {
 
     const loadUserInfo = async (token: string) => {
         try {
-            const response = await axiosInstance.get<ApiResponse<User>>('/api/auth/user', {
+            const { data } = await axiosInstance.get<User>('/api/auth/user', {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
-            setUser(JSON.stringify(response.data.data));
+            setUser(JSON.stringify(data));
         } catch (error) {
             if (isAxiosError(error) && error.response?.status === 401) {
                 logoutUser();

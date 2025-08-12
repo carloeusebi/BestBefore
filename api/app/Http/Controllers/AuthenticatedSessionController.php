@@ -36,7 +36,7 @@ final class AuthenticatedSessionController extends Controller
 
             Auth::login($user);
 
-            return Response::apiResponse([
+            return response()->json([
                 'token' => $user->createToken('auth-token')->plainTextToken,
                 'user' => $user->toResource(),
             ]);

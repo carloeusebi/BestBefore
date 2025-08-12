@@ -11,13 +11,13 @@ function Header() {
     if (session && !isLoading) {
         return (
             <>
-                <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} backgroundColor={currentTheme === 'dark' ? '#111827' : '#FFFFFF'} />
+                <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} />
                 <Redirect href="/" />
             </>
         );
     }
 
-    return <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} backgroundColor={currentTheme === 'dark' ? '#111827' : '#FFFFFF'} />;
+    return <StatusBar style={currentTheme === 'dark' ? 'light' : 'dark'} />;
 }
 
 export default function RootLayout() {
