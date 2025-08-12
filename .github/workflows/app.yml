@@ -1,4 +1,4 @@
-name: tests.yml
+name: APP Tests
 
 on:
   push:

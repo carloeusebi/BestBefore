@@ -9,14 +9,17 @@
   ],
   "license": "MIT",
   "require": {
-    "php": "^8.2",
+    "php": "^8.4",
     "laravel/framework": "^12.0",
+    "laravel/octane": "^2.12",
     "laravel/sanctum": "^4.0",
     "laravel/socialite": "^5.23",
     "laravel/tinker": "^2.10.1"
   },
   "require-dev": {
+    "driftingly/rector-laravel": "^2.0",
     "fakerphp/faker": "^1.23",
+    "larastan/larastan": "^3.6",
     "laravel/pail": "^1.2.2",
     "laravel/pint": "^1.13",
     "laravel/sail": "^1.41",
@@ -56,11 +59,23 @@
     ],
     "dev": [
       "Composer\\Config::disableProcessTimeout",
-      "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185,#fdba74\" \"php artisan serve --host=0.0.0.0 --port=8000\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" \"npm run dev\" --names=server,queue,logs,vite"
+      "npx concurrently -c \"#93c5fd,#c4b5fd,#fb7185\" \"php artisan octane:start --host=0.0.0.0 --port=8000\" \"php artisan queue:listen --tries=1\" \"php artisan pail --timeout=0\" --names=server,queue,logs"
     ],
+    "rector": "vendor/bin/rector --ansi",
+    "pint": "vendor/bin/pint --ansi ",
+    "test:rector": "vendor/bin/rector --ansi --dry-run",
+    "test:pint": "vendor/bin/pint --ansi --test",
+    "test:types": "vendor/bin/phpstan analyse -c phpstan.neon --ansi --memory-limit=-1",
+    "test:unit": "vendor/bin/pest --parallel --coverage --compact",
     "test": [
-      "@php artisan config:clear --ansi",
-      "@php artisan test"
+      "@test:rector",
+      "@test:pint",
+      "@test:types",
+      "@test:unit"
+    ],
+    "fix": [
+      "@rector",
+      "@pint"
     ]
   },
   "extra": {

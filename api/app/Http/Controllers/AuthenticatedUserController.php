@@ -1,12 +1,14 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class AuthenticatedUserController extends Controller
+final class AuthenticatedUserController extends Controller
 {
     public function __invoke(Request $request): JsonResponse
     {
