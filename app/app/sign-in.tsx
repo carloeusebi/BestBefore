@@ -58,7 +58,7 @@ export default function WelcomeScreen() {
                 }
 
                 signIn(userData.token, userData.user);
-                router.replace('/(app)');
+                router.replace('/');
             }
         } catch (error) {
             if (isErrorWithCode(error)) {

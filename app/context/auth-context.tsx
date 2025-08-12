@@ -13,7 +13,7 @@ export interface User {
 
 interface AuthContextType {
     signIn: (token: string, user: User) => void;
-    signOut: () => void;
+    signOut: (() => Promise<void>) | (() => void);
     session?: string | null;
     user?: User | null;
     isLoading: boolean;
@@ -115,7 +115,7 @@ export function SessionProvider({ children }: PropsWithChildren) {
         try {
             setSession(token);
             setUser(JSON.stringify(userData));
-            router.replace('/(app)');
+            router.replace('/');
         } catch (e) {
             console.error('Error signing in:', e);
             throw e;

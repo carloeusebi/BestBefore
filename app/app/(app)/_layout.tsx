@@ -33,6 +33,12 @@ export default function AppLayout() {
                     backgroundColor: colors.background,
                 },
             }}
-        />
+        >
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="home" options={{ headerTitle: 'Home' }} />
+            <Stack.Screen name="scan" options={{ headerTitle: 'Scansiona' }} />
+            <Stack.Screen name="new" options={{ headerTitle: 'Aggiungi' }} />
+            <Stack.Screen name="profile" options={{ headerTitle: 'Profilo' }} />
+        </Stack>
     );
 }
