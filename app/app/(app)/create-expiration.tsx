@@ -1,0 +1,199 @@
+import { router, useLocalSearchParams } from 'expo-router';
+import { Alert, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useEffect, useState } from 'react';
+import { Expiration, Product, ValidationErrors } from '@/types';
+import expirationsService from '@/services/expirations-service';
+import productsService from '@/services/products-service';
+import { Datepicker } from '@/components/datepicker';
+import { isAxiosError } from 'axios';
+import Spacer from '@/components/spacer';
+import Input from '@/components/input';
+
+type ExpirationForm = Partial<{
+    product_id: Expiration['product_id'];
+    expires_at: Expiration['expires_at'] | Date;
+    quantity: Expiration['quantity'] | string;
+    notes: Expiration['notes'];
+    notification_days_before: Expiration['notification_days_before'] | string;
+    notification_method: Expiration['notification_method'];
+}>;
+
+export default function CreateExpiration() {
+    const { product: productString } = useLocalSearchParams<{ product?: string }>();
+
+    const [product, setProduct] = useState<Product | null>(null);
+
+    const [submitting, setSubmitting] = useState(false);
+
+    useEffect(() => {
+        try {
+            if (!productString) {
+                // noinspection ExceptionCaughtLocallyJS
+                throw new Error('Prodotto non trovato');
+            }
+
+            const parsedProduct = JSON.parse(productString) as Product;
+
+            productsService
+                .getProductById(parsedProduct.id)
+                .then(({ data }) => {
+                    setProduct(data);
+                })
+                .catch((err) => {
+                    throw err;
+                });
+        } catch (err) {
+            console.error(err);
+            Alert.alert('Errore', 'Impossibile caricare il prodotto. Riprova.');
+            router.replace('/(app)/(tabs)');
+        }
+    }, [productString]);
+
+    const [form, setForm] = useState<ExpirationForm>({
+        product_id: product?.id,
+        expires_at: undefined,
+        quantity: 1,
+        notes: '',
+        notification_days_before: 1,
+        notification_method: 'both'
+    });
+    const [errors, setErrors] = useState<Record<keyof ExpirationForm, string> | null>(null);
+
+    const setFormData = <T extends keyof typeof form>(key: T, value: (typeof form)[T]) => {
+        setForm((prev) => ({ ...prev, [key]: value }));
+    };
+
+    const onSubmit = async () => {
+        try {
+            setErrors(null);
+            setSubmitting(true);
+            await expirationsService.createExpiration({
+                ...form,
+                expires_at: (form.expires_at as Date | undefined)?.toDateString()
+            });
+            Alert.alert('Successo', 'Scadenza creata correttamente.', [
+                {
+                    text: 'OK',
+                    onPress: () => router.replace('/(app)/(tabs)')
+                }
+            ]);
+        } catch (e) {
+            if (isAxiosError(e) && e.response?.status === 422)
+                setErrors(
+                    Object.fromEntries(Object.entries(e.response.data.errors as ValidationErrors).map(([key, value]) => [key, value[0]])) as Record<
+                        keyof ExpirationForm,
+                        string
+                    >
+                );
+            else {
+                console.error(e);
+                Alert.alert('Errore', 'Impossibile creare la scadenza. Riprova.');
+            }
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
+    const MethodButton = ({ value, label }: { value: ExpirationForm['notification_method']; label: string }) => (
+        <TouchableOpacity
+            onPress={() => setFormData('notification_method', value)}
+            className={`flex-1 items-center justify-center rounded border px-3 py-2 ${
+                form.notification_method === value ? 'border-emerald-700 bg-emerald-600' : 'border-gray-300 dark:border-gray-700'
+            }`}
+        >
+            <Text
+                className={`text-sm font-semibold ${form.notification_method === value ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}>
+                {label}
+            </Text>
+        </TouchableOpacity>
+    );
+
+    return (
+        <SafeAreaView edges={['top']} className="flex-1 bg-white px-4 dark:bg-gray-900">
+            <View className="mb-4 rounded-lg bg-black/5 p-3 dark:bg-white/10">
+                <Text className="mb-1 text-base font-semibold text-black dark:text-white">{product?.name}</Text>
+                {!!product?.brand && <Text className="text-xs text-gray-700 dark:text-gray-300">{product.brand}</Text>}
+                {!!product?.description &&
+                    <Text className="text-xs text-gray-600 dark:text-gray-400">{product.description}</Text>}
+            </View>
+
+            <View className="gap-3">
+                <View className="gap-2">
+                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Data di scadenza</Text>
+                    <Datepicker
+                        date={form.expires_at as Date | undefined}
+                        error={errors?.expires_at}
+                        onDateChange={(date) => setFormData('expires_at', date)}
+                    />
+                </View>
+
+                <View className="gap-2">
+                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Giorni prima per
+                        notifica</Text>
+                    <Input
+                        value={form.notification_days_before?.toString() ?? ''}
+                        error={errors?.notification_days_before}
+                        onChangeText={(value) => setFormData('notification_days_before', value)}
+                        className="h-12 rounded border border-gray-300 bg-white px-3 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        keyboardType="numeric"
+                    />
+                </View>
+
+                <View className="gap-2">
+                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Metodo di notifica</Text>
+                    <View className="flex-row gap-2">
+                        <MethodButton value="none" label="Nessuna" />
+                        <MethodButton value="push" label="Push" />
+                    </View>
+                    <View className="mt-2 flex-row gap-2">
+                        <MethodButton value="email" label="Email" />
+                        <MethodButton value="both" label="Entrambi" />
+                    </View>
+                </View>
+
+                <View className="gap-2">
+                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Quantità</Text>
+                    <Input
+                        error={errors?.quantity}
+                        value={form.quantity?.toString() ?? ''}
+                        onChangeText={(value) => setFormData('quantity', value)}
+                        className="h-12 rounded border border-gray-300 bg-white px-3 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        keyboardType="numeric"
+                    />
+                </View>
+
+                <View className="gap-2">
+                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Note (opzionali)</Text>
+                    <Input
+                        error={errors?.notes}
+                        placeholder="Aggiungi note"
+                        value={form.notes ?? ''}
+                        onChangeText={(value) => setFormData('notes', value)}
+                        className="min-h-12 rounded border border-gray-300 bg-white px-3 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
+                        multiline
+                    />
+                </View>
+
+                <Spacer />
+
+                <View className="mt-2 flex-row gap-3">
+                    <TouchableOpacity
+                        onPress={() => router.back()}
+                        className="flex-1 items-center justify-center rounded border border-gray-300 py-3 dark:border-gray-700"
+                    >
+                        <Text className="font-semibold text-gray-800 dark:text-gray-200">Annulla</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={onSubmit}
+                        disabled={submitting}
+                        className="flex-1 items-center justify-center rounded bg-emerald-600 py-3 disabled:opacity-60"
+                    >
+                        {submitting ? <ActivityIndicator color="#fff" /> :
+                            <Text className="font-semibold text-white">Crea scadenza</Text>}
+                    </TouchableOpacity>
+                </View>
+            </View>
+        </SafeAreaView>
+    );
+}

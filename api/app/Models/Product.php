@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Laravel\Scout\Searchable;
 
 final class Product extends Model
 {
@@ -17,6 +18,9 @@ final class Product extends Model
     use HasFactory;
 
     use HasUlids;
+    use Searchable;
+
+    protected $with = ['barcode'];
 
     /**
      * @return HasMany<Expiration, $this>
@@ -32,5 +36,18 @@ final class Product extends Model
     public function barcode(): BelongsTo
     {
         return $this->belongsTo(Barcode::class);
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function toSearchableArray(): array
+    {
+        return [
+            'id' => (string) $this->id,
+            'name' => $this->name,
+            'brand' => (string) $this->brand,
+            'description' => (string) $this->description,
+        ];
     }
 }

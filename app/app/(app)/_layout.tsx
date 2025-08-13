@@ -35,6 +35,8 @@ export default function AppLayout() {
             }}
         >
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="create-product" options={{ title: 'Nuovo prodotto' }} />
+            <Stack.Screen name="create-expiration" options={{ title: 'Nuova Scadenza' }} />
         </Stack>
     );
 }

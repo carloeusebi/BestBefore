@@ -22,7 +22,7 @@ export const Button = ({ title, className, disabled, loading, variant, onPress, 
                 };
             case 'secondary':
                 return {
-                    gradient: ['#4B5563', '#374151'],
+                    gradient: ['#9CA3AF', '#6B7280'],
                     textColor: 'text-white',
                 };
             case 'destructive':

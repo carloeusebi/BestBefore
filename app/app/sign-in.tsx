@@ -68,19 +68,19 @@ export default function WelcomeScreen() {
             if (isErrorWithCode(error)) {
                 switch (error.code) {
                     case statusCodes.SIGN_IN_CANCELLED:
-                        Alert.alert('User cancelled the login flow');
+                        Alert.alert("Accesso annullato dall'utente", error.message);
                         break;
                     case statusCodes.SIGN_IN_REQUIRED:
-                        Alert.alert('User must sign in');
+                        Alert.alert("È necessario effettuare l'accesso", error.message);
                         break;
                     case statusCodes.IN_PROGRESS:
-                        Alert.alert('Operation (e.g. sign in) is in progress already');
+                        Alert.alert('Operazione di accesso già in corso', error.message);
                         break;
                     case statusCodes.PLAY_SERVICES_NOT_AVAILABLE:
-                        Alert.alert('Play services not available or outdated. Maybe update.');
+                        Alert.alert('Servizi Google Play non disponibili o non aggiornati', error.message);
                         break;
                     default:
-                        Alert.alert('Some other error happened');
+                        Alert.alert('Si è verificato un errore imprevisto', error.message);
                         break;
                 }
             } else {

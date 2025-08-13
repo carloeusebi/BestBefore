@@ -74,12 +74,13 @@ export default function Scan() {
     };
 
     const onChooseProduct = (product: Product) => {
-        console.log('Selected product:', product);
-        setShowChoice(false);
+        const params = { product: JSON.stringify(product) };
+
+        router.navigate({ pathname: '/(app)/create-expiration', params });
     };
 
     const onCreateNewProduct = () => {
-        router.push({ pathname: '/(app)/new-product', params: barcode ? { barcode } : undefined });
+        router.push({ pathname: '/(app)/create-product', params: barcode ? { barcode } : undefined });
     };
 
     return (

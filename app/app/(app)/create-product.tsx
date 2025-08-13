@@ -5,7 +5,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Button } from '@/components/button';
 import productsService from '@/services/products-service';
 
-export default function NewProduct() {
+export default function CreateProduct() {
     const { barcode } = useLocalSearchParams<{ barcode?: string }>();
     const [name, setName] = useState('');
     const [brand, setBrand] = useState('');
@@ -13,24 +13,27 @@ export default function NewProduct() {
     const [loading, setLoading] = useState(false);
 
     const onSubmit = async () => {
-        if (!barcode) {
-            Alert.alert('Barcode mancante', 'Torna alla scansione e riprova.');
-            return;
-        }
         if (!name.trim()) {
             Alert.alert('Nome richiesto', 'Inserisci il nome del prodotto.');
             return;
         }
         try {
             setLoading(true);
-            await productsService.createProductForBarcode({
-                barcode,
+            const payload: { name: string; description?: string; brand?: string; barcode?: string } = {
                 name: name.trim(),
-                brand: brand.trim() || undefined,
-                description: description.trim() || undefined,
+            };
+            const b = brand.trim();
+            const d = description.trim();
+            if (b) payload.brand = b;
+            if (d) payload.description = d;
+            if (typeof barcode === 'string' && barcode.length > 0) {
+                payload.barcode = barcode;
+            }
+            const product = await productsService.createProduct(payload);
+            router.push({
+                pathname: '/(app)/create-expiration',
+                params: { product: JSON.stringify(product) },
             });
-            Alert.alert('Prodotto creato', 'Il prodotto è stato creato con successo.');
-            router.back();
         } catch (e) {
             console.error(e);
             Alert.alert('Errore', 'Non è stato possibile creare il prodotto.');
@@ -40,8 +43,8 @@ export default function NewProduct() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
-            <View className="gap-3 p-4">
+        <SafeAreaView className="flex-1 bg-white px-4 dark:bg-gray-900">
+            <View className="gap-3 pt-0">
                 <Text className="text-lg font-semibold">Nuovo prodotto</Text>
                 {barcode ? <Text className="text-gray-600">Barcode: {barcode}</Text> : null}
 

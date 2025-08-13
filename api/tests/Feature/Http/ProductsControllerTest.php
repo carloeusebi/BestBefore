@@ -3,15 +3,40 @@
 declare(strict_types=1);
 
 use App\Models\Barcode;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Str;
+use Illuminate\Testing\Fluent\AssertableJson;
 
 use function Pest\Laravel\actingAs;
 use function Pest\Laravel\assertDatabaseHas;
+use function Pest\Laravel\getJson;
 use function Pest\Laravel\postJson;
 
 beforeEach(function (): void {
     actingAs(User::factory()->create());
+});
+
+it('can retrieve products', function (): void {
+    Product::factory()->create(['name' => 'Test Product']);
+
+    $response = getJson(route('products.index', ['q' => 'test']))->assertOk();
+
+    $response->assertJsonCount(1);
+});
+
+it('returns an empty array if no products found', function (): void {
+    Product::factory()->create(['name' => 'Test Product']);
+
+    $response = getJson(route('products.index'))->assertOk();
+
+    $response->assertJsonCount(0);
+});
+
+it('requires at least three characters', function (): void {
+    $response = getJson(route('products.index', ['q' => 'te']));
+
+    $response->assertInvalid('q');
 });
 
 it('can store a product', function (): void {
@@ -55,4 +80,23 @@ it('creates a barcode if not existing', function (): void {
         'name' => $name,
         'barcode_id' => Barcode::where('barcode', $barcode)->first()->id,
     ]);
+});
+
+it('returns a product', function (): void {
+    $product = Product::factory()->create();
+
+    $response = getJson(route('products.show', ['product' => $product]))->assertOk();
+
+    $response->assertJson(fn (AssertableJson $json) => $json
+        ->where('id', $product->id)
+        ->where('name', $product->name)
+        ->where('barcode', $product->barcode->barcode)
+        ->where('description', $product->description)
+        ->where('brand', $product->brand)
+
+    );
+});
+
+it('returns 404 if not found', function (): void {
+    getJson(route('products.show', ['product' => 'invalid-id']))->assertNotFound();
 });

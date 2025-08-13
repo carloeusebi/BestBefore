@@ -35,7 +35,7 @@ export default function TabsLayout() {
                 }}
             />
             <Tabs.Screen
-                name="new-expiration"
+                name="select-product"
                 options={{
                     title: 'Aggiungi',
                     tabBarIcon: ({ color, size }) => <PlusIcon size={size} color={color} />,
