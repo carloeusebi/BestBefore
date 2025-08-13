@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="112eb98b-0030-4893-9e58-f45d2a15b356" name="bestbefore.carloeusebideveloper.com">
+        <fileTransfer rootFolder="/home/forge/bestbefore.carloeusebideveloper.com/api" accessType="SFTP" host="168.119.246.37" port="22" sshConfigId="09c089b3-68a8-4df7-b9d3-032c50b1c81d" sshConfig="forge@168.119.246.37:22 key" keyPair="true">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" keepAliveTimeout="0" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>

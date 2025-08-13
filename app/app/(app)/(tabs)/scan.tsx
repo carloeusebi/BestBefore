@@ -27,6 +27,24 @@ export default function Scan() {
         };
     }, [isFocused]);
 
+    useEffect(() => {
+        onBarcodeScanned({
+            data: '3700789251927',
+            type: '',
+            cornerPoints: [],
+            bounds: {
+                origin: {
+                    x: 0,
+                    y: 0,
+                },
+                size: {
+                    height: 0,
+                    width: 0,
+                },
+            },
+        });
+    }, []);
+
     if (!permission) {
         return <View className="flex-1 items-center justify-center bg-white dark:bg-gray-900" />;
     }
