@@ -13,10 +13,10 @@ Route::middleware('guest')->group(function () {
 });
 
 Route::middleware('auth:sanctum')->group(function () {
-
     Route::post('/auth/logout', [AuthenticatedSessionController::class, 'destroy'])->name('logout');
 
-    Route::get('/auth/user', AuthenticatedUserController::class)->name('user');
+    Route::get('/auth/user', [AuthenticatedUserController::class, 'show'])->name('user.show');
+    Route::patch('/auth/user', [AuthenticatedUserController::class, 'update'])->name('user.update');
 
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
 

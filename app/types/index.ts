@@ -3,6 +3,8 @@ export interface User {
     name: string;
     email: string;
     avatar: string;
+    notifyByEmail?: boolean;
+    notifyByPush?: boolean;
 }
 
 export interface Product {

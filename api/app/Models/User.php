@@ -39,6 +39,8 @@ final class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'notify_by_email' => 'boolean',
+            'notify_by_push' => 'boolean',
         ];
     }
 }

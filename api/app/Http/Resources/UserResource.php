@@ -21,6 +21,8 @@ final class UserResource extends JsonResource
             'name' => $this->name,
             'email' => $this->email,
             'avatar' => $this->avatar,
+            'notifyByEmail' => $this->notify_by_email,
+            'notifyByPush' => $this->notify_by_push,
         ];
     }
 }

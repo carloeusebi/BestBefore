@@ -19,53 +19,6 @@ export default function Scan() {
     const [showNoProducts, setShowNoProducts] = useState(false);
     const isFocused = useIsFocused();
 
-    useEffect(() => {
-        setIsCameraActive(isFocused);
-        return () => {
-            setScanned(false);
-            setIsCameraActive(false);
-        };
-    }, [isFocused]);
-
-    useEffect(() => {
-        onBarcodeScanned({
-            data: '3700789251927',
-            type: '',
-            cornerPoints: [],
-            bounds: {
-                origin: {
-                    x: 0,
-                    y: 0,
-                },
-                size: {
-                    height: 0,
-                    width: 0,
-                },
-            },
-        });
-    }, []);
-
-    if (!permission) {
-        return <View className="flex-1 items-center justify-center bg-white dark:bg-gray-900" />;
-    }
-
-    if (!permission.granted) {
-        return (
-            <View className="flex-1 items-center justify-center gap-3 bg-white dark:bg-gray-900">
-                <Text>Per continuare ci servono i permessi per la fotocamera</Text>
-                <Button variant="primary" onPress={requestPermission} title="Richiedi i permessi" />
-            </View>
-        );
-    }
-
-    const resetScan = () => {
-        setScanned(false);
-        setBarcode('');
-        setProducts(null);
-        setShowChoice(false);
-        setShowNoProducts(false);
-    };
-
     const onBarcodeScanned = async (result: BarcodeScanningResult) => {
         if (scanned) return;
 
@@ -89,6 +42,35 @@ export default function Scan() {
             }
             setShowNoProducts(true);
         }
+    };
+
+    useEffect(() => {
+        setIsCameraActive(isFocused);
+        return () => {
+            setScanned(false);
+            setIsCameraActive(false);
+        };
+    }, [isFocused]);
+
+    if (!permission) {
+        return <View className="flex-1 items-center justify-center bg-white dark:bg-gray-900" />;
+    }
+
+    if (!permission.granted) {
+        return (
+            <View className="flex-1 items-center justify-center gap-3 bg-white dark:bg-gray-900">
+                <Text>Per continuare ci servono i permessi per la fotocamera</Text>
+                <Button variant="primary" onPress={requestPermission} title="Richiedi i permessi" />
+            </View>
+        );
+    }
+
+    const resetScan = () => {
+        setScanned(false);
+        setBarcode('');
+        setProducts(null);
+        setShowChoice(false);
+        setShowNoProducts(false);
     };
 
     const onChooseProduct = (product: Product) => {

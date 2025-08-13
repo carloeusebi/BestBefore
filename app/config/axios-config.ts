@@ -1,9 +1,10 @@
 import axios from 'axios';
-import { API_BASE_URL } from '@/config/env';
 import * as SecureStore from 'expo-secure-store';
 
+const baseURL = process.env.EXPO_PUBLIC_API_BASE_URL;
+
 const axiosInstance = axios.create({
-    baseURL: API_BASE_URL,
+    baseURL,
     headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',

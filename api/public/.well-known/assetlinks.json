@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.bestbefore.app",
+      "sha256_cert_fingerprints": [
+        "DB:3A:2D:86:9C:63:C5:08:6E:A3:5B:6D:F4:96:6F:DB:DA:D7:0D:E0"
+      ]
+    }
+  }
+]

@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('avatar')->nullable();
+            $table->boolean('notify_by_email')->default(true);
+            $table->boolean('notify_by_push')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

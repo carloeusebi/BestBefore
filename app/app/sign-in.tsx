@@ -3,7 +3,6 @@ import { useThemeColors } from '@/hooks/use-theme-colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect } from 'react';
 import { GoogleSignin, isSuccessResponse, isErrorWithCode, statusCodes } from '@react-native-google-signin/google-signin';
-import { CLIENT_ID, IOS_CLIENT_ID } from '@/config/env';
 import { useSession } from '@/context/auth-context';
 import axiosInstance from '@/config/axios-config';
 import { router } from 'expo-router';
@@ -15,14 +14,17 @@ type LoginResponse = {
     user: User;
 };
 
+const iosClientId = process.env.EXPO_PUBLIC_IOS_CLIENT_ID;
+const webClientId = process.env.EXPO_PUBLIC_CLIENT_ID;
+
 export default function WelcomeScreen() {
     const colors = useThemeColors();
     const { signIn } = useSession();
 
     useEffect(() => {
         GoogleSignin.configure({
-            iosClientId: IOS_CLIENT_ID,
-            webClientId: CLIENT_ID,
+            iosClientId,
+            webClientId,
             profileImageSize: 150,
         });
     }, []);
@@ -47,7 +49,6 @@ export default function WelcomeScreen() {
             const response = await GoogleSignin.signIn();
             if (isSuccessResponse(response)) {
                 const { idToken } = response.data;
-                console.log('idToken:', idToken);
                 if (!idToken) {
                     console.error('No idToken');
                     return;
@@ -63,6 +64,7 @@ export default function WelcomeScreen() {
                 router.replace('/');
             }
         } catch (error) {
+            console.error('Error signing in:', error);
             if (isErrorWithCode(error)) {
                 switch (error.code) {
                     case statusCodes.SIGN_IN_CANCELLED:
