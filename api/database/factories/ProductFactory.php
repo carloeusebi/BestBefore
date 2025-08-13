@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace Database\Factories;
 
+use App\Enums\Category;
 use App\Models\Barcode;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Carbon;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Product>
+ * @extends Factory<Product>
  */
 final class ProductFactory extends Factory
 {
@@ -22,6 +23,7 @@ final class ProductFactory extends Factory
             'name' => fake()->words(asText: true),
             'description' => fake()->text(),
             'brand' => fake()->company(),
+            'category' => Category::random(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),
 

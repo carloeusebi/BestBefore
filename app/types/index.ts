@@ -13,6 +13,7 @@ export interface Product {
     description: string | null;
     barcode: string | null;
     brand: string | null;
+    category: string | null;
 }
 
 export type NotificationMethod = 'none' | 'push' | 'email' | 'both';

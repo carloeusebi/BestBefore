@@ -9,6 +9,7 @@ import { Datepicker } from '@/components/datepicker';
 import { isAxiosError } from 'axios';
 import Spacer from '@/components/spacer';
 import Input from '@/components/input';
+import ProductCard from '@/components/product-card';
 
 type ExpirationForm = Partial<{
     product_id: Expiration['product_id'];
@@ -53,10 +54,10 @@ export default function CreateExpiration() {
     const [form, setForm] = useState<ExpirationForm>({
         product_id: product?.id,
         expires_at: undefined,
-        quantity: 1,
+        quantity: undefined,
         notes: '',
         notification_days_before: 1,
-        notification_method: 'both'
+        notification_method: 'both',
     });
     const [errors, setErrors] = useState<Record<keyof ExpirationForm, string> | null>(null);
 
@@ -70,21 +71,20 @@ export default function CreateExpiration() {
             setSubmitting(true);
             await expirationsService.createExpiration({
                 ...form,
-                expires_at: (form.expires_at as Date | undefined)?.toDateString()
+                expires_at: (form.expires_at as Date | undefined)?.toDateString(),
             });
             Alert.alert('Successo', 'Scadenza creata correttamente.', [
                 {
                     text: 'OK',
-                    onPress: () => router.replace('/(app)/(tabs)')
-                }
+                    onPress: () => router.replace('/(app)/(tabs)'),
+                },
             ]);
         } catch (e) {
             if (isAxiosError(e) && e.response?.status === 422)
                 setErrors(
-                    Object.fromEntries(Object.entries(e.response.data.errors as ValidationErrors).map(([key, value]) => [key, value[0]])) as Record<
-                        keyof ExpirationForm,
-                        string
-                    >
+                    Object.fromEntries(
+                        Object.entries(e.response.data.errors as ValidationErrors<ExpirationForm>).map(([key, value]) => [key, value[0]]),
+                    ) as Record<keyof ExpirationForm, string>,
                 );
             else {
                 console.error(e);
@@ -102,8 +102,7 @@ export default function CreateExpiration() {
                 form.notification_method === value ? 'border-emerald-700 bg-emerald-600' : 'border-gray-300 dark:border-gray-700'
             }`}
         >
-            <Text
-                className={`text-sm font-semibold ${form.notification_method === value ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}>
+            <Text className={`text-sm font-semibold ${form.notification_method === value ? 'text-white' : 'text-gray-800 dark:text-gray-200'}`}>
                 {label}
             </Text>
         </TouchableOpacity>
@@ -111,12 +110,13 @@ export default function CreateExpiration() {
 
     return (
         <SafeAreaView edges={['top']} className="flex-1 bg-white px-4 dark:bg-gray-900">
-            <View className="mb-4 rounded-lg bg-black/5 p-3 dark:bg-white/10">
-                <Text className="mb-1 text-base font-semibold text-black dark:text-white">{product?.name}</Text>
-                {!!product?.brand && <Text className="text-xs text-gray-700 dark:text-gray-300">{product.brand}</Text>}
-                {!!product?.description &&
-                    <Text className="text-xs text-gray-600 dark:text-gray-400">{product.description}</Text>}
-            </View>
+            {product ? (
+                <ProductCard product={product} />
+            ) : (
+                <View className="mb-2 h-[60px] rounded-lg bg-black/5 p-3 dark:bg-white/10">
+                    <ActivityIndicator />
+                </View>
+            )}
 
             <View className="gap-3">
                 <View className="gap-2">
@@ -129,8 +129,7 @@ export default function CreateExpiration() {
                 </View>
 
                 <View className="gap-2">
-                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Giorni prima per
-                        notifica</Text>
+                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Giorni prima per notifica</Text>
                     <Input
                         value={form.notification_days_before?.toString() ?? ''}
                         error={errors?.notification_days_before}
@@ -153,7 +152,7 @@ export default function CreateExpiration() {
                 </View>
 
                 <View className="gap-2">
-                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Quantità</Text>
+                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Quantità (opzionale)</Text>
                     <Input
                         error={errors?.quantity}
                         value={form.quantity?.toString() ?? ''}
@@ -189,8 +188,7 @@ export default function CreateExpiration() {
                         disabled={submitting}
                         className="flex-1 items-center justify-center rounded bg-emerald-600 py-3 disabled:opacity-60"
                     >
-                        {submitting ? <ActivityIndicator color="#fff" /> :
-                            <Text className="font-semibold text-white">Crea scadenza</Text>}
+                        {submitting ? <ActivityIndicator color="#fff" /> : <Text className="font-semibold text-white">Crea scadenza</Text>}
                     </TouchableOpacity>
                 </View>
             </View>

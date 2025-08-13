@@ -204,10 +204,14 @@ return [
                             'name' => 'brand',
                             'type' => 'string',
                         ],
+                        [
+                            'name' => 'category',
+                            'type' => 'string',
+                        ],
                     ],
                 ],
                 'search-parameters' => [
-                    'query_by' => 'name,description,brand',
+                    'query_by' => 'name,description,brand,category',
                 ],
             ],
         ],

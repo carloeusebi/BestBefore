@@ -59,7 +59,7 @@ export default function Scan() {
     if (!permission.granted) {
         return (
             <View className="flex-1 items-center justify-center gap-3 bg-white dark:bg-gray-900">
-                <Text>Per continuare ci servono i permessi per la fotocamera</Text>
+                <Text className="text-gray-800 dark:text-gray-300">Per continuare ci servono i permessi per la fotocamera</Text>
                 <Button variant="primary" onPress={requestPermission} title="Richiedi i permessi" />
             </View>
         );
@@ -114,9 +114,11 @@ export default function Scan() {
                     )}
 
                     {showNoProducts && (
-                        <View className="absolute bottom-[100px] left-5 right-5 max-h-[60%] gap-2 rounded-lg bg-white/95 p-4">
-                            <Text className="mb-2 text-lg font-semibold text-black">Nessun prodotto trovato</Text>
-                            <Text className="mb-3 text-sm text-black">Vuoi creare un nuovo prodotto per il barcode {barcode}?</Text>
+                        <View className="absolute bottom-[100px] left-5 right-5 max-h-[60%] gap-2 rounded-lg bg-white/95 p-4 dark:bg-gray-800">
+                            <Text className="mb-2 text-lg font-semibold text-black dark:text-gray-200">Nessun prodotto trovato</Text>
+                            <Text className="mb-3 text-sm text-black dark:text-gray-300">
+                                Vuoi creare un nuovo prodotto per il barcode {barcode}?
+                            </Text>
                             <Button variant="primary" title="Crea nuovo prodotto" onPress={onCreateNewProduct} />
                             <Button variant="secondary" title="Riprova" onPress={resetScan} />
                         </View>

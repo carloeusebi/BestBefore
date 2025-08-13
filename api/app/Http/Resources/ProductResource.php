@@ -22,6 +22,7 @@ final class ProductResource extends JsonResource
             'description' => $this->description,
             'barcode' => $this->barcode?->barcode,
             'brand' => $this->brand,
+            'category' => $this->category?->value,
         ];
     }
 }

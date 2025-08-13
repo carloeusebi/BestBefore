@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Enums\Category;
 use App\Models\Barcode;
 use App\Models\Product;
 use App\Models\User;
@@ -44,6 +45,7 @@ it('can store a product', function (): void {
         'name' => $name = 'Test Product',
         'description' => $description = 'Test Product Description',
         'brand' => $brand = 'Test Brand',
+        'category' => Category::random(),
     ])->assertCreated();
 
     assertDatabaseHas('products', [
@@ -59,6 +61,7 @@ it('associates an existing barcode', function (): void {
     postJson(route('products.store'), [
         'name' => $name = 'Test Product',
         'barcode' => $barcode->barcode,
+        'category' => Category::random(),
     ])->assertCreated();
 
     assertDatabaseHas('products', [
@@ -71,6 +74,7 @@ it('creates a barcode if not existing', function (): void {
     postJson(route('products.store'), [
         'name' => $name = 'Test Product',
         'barcode' => $barcode = Str::random(),
+        'category' => Category::random(),
     ]);
 
     assertDatabaseHas('barcodes', [
@@ -93,7 +97,7 @@ it('returns a product', function (): void {
         ->where('barcode', $product->barcode->barcode)
         ->where('description', $product->description)
         ->where('brand', $product->brand)
-
+        ->where('category', $product->category->value)
     );
 });
 

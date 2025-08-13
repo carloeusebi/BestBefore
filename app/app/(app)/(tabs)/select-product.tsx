@@ -5,14 +5,19 @@ import productsService from '@/services/products-service';
 import { Product } from '@/types';
 import { Button } from '@/components/button';
 import { router } from 'expo-router';
-import { PlusIcon } from 'lucide-react-native';
 import { useStorageState } from '@/hooks/use-storage-state';
+import { categories } from '@/lib/categories';
+import { useThemeColors } from '@/hooks/use-theme-colors';
+import { PlusIcon } from 'lucide-react-native';
+import ProductCard from '@/components/product-card';
 
 export default function SelectProduct() {
     const [query, setQuery] = useState('');
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [results, setResults] = useState<Product[]>([]);
+
+    const colors = useThemeColors();
 
     // Recent selections persistence
     const RECENTS_KEY = 'recent_products';
@@ -77,7 +82,9 @@ export default function SelectProduct() {
         // Update recents: move to front, dedupe by id, cap 10
         const existingIdx = recents.findIndex((p) => p.id === product.id);
         const updated = [product, ...recents.filter((p, idx) => idx !== existingIdx && p.id !== product.id)].slice(0, 10);
-        saveRecents(updated);
+        setTimeout(() => {
+            saveRecents(updated);
+        }, 500);
 
         const params = { product: JSON.stringify(product) };
         router.push({ pathname: '/(app)/create-expiration', params });
@@ -85,30 +92,27 @@ export default function SelectProduct() {
 
     const renderItem = ({ item }: { item: Product }) => (
         <TouchableOpacity onPress={() => onSelectProduct(item)}>
-            <View className="mb-2 rounded-lg bg-black/5 p-3 dark:bg-white/10">
-                <Text className="mb-1 text-base font-medium text-black dark:text-white">{item.name}</Text>
-                {item.brand ? <Text className="text-xs text-gray-700 dark:text-gray-300">{item.brand}</Text> : null}
-            </View>
+            <ProductCard product={item} />
         </TouchableOpacity>
     );
 
     const keyExtractor = useMemo(() => (item: Product) => item.id, []);
 
-        // Dedupe: avoid showing items in recents that are already in results
-        const recentsFiltered = useMemo(() => {
-            if (!recents || recents.length === 0) return [] as Product[];
-            if (!results || results.length === 0) return recents;
-            const resultIds = new Set(results.map((r) => r.id));
-            return recents.filter((p) => !resultIds.has(p.id));
-        }, [recents, results]);
+    // Dedupe: avoid showing items in recents that are already in results
+    const recentsFiltered = useMemo(() => {
+        if (!recents || recents.length === 0) return [] as Product[];
+        if (!results || results.length === 0) return recents;
+        const resultIds = new Set(results.map((r) => r.id));
+        return recents.filter((p) => !resultIds.has(p.id));
+    }, [recents, results]);
 
-        // Build sections: Results (if any) on top, then Recenti (always if any)
-        const sections = useMemo(() => {
-            const s: { title: string; data: Product[] }[] = [];
-            if (results.length > 0) s.push({ title: 'Risultati', data: results });
-            if (recentsFiltered.length > 0) s.push({ title: 'Recenti', data: recentsFiltered });
-            return s;
-        }, [results, recentsFiltered]);
+    // Build sections: Results (if any) on top, then Recenti (always if any)
+    const sections = useMemo(() => {
+        const s: { title: string; data: Product[] }[] = [];
+        if (results.length > 0) s.push({ title: 'Risultati', data: results });
+        if (recentsFiltered.length > 0) s.push({ title: 'Recenti', data: recentsFiltered });
+        return s;
+    }, [results, recentsFiltered]);
 
     return (
         <SafeAreaView edges={['top']} className="flex-1 bg-white p-4 dark:bg-gray-900">

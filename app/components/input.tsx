@@ -10,7 +10,7 @@ export default function Input({ error, className, ...props }: InputProps) {
     return (
         <View style={{ position: 'relative' }}>
             <TextInput
-                className={`h-12 rounded border border-gray-300 bg-white px-3 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white ${!!error ? 'border-red-500 pe-8' : ''} ${className ?? ''}`}
+                className={`h-12 rounded border border-gray-300 bg-white px-3 text-black placeholder:text-gray-700 dark:border-gray-700 dark:bg-gray-800 dark:text-white dark:placeholder:text-gray-500 ${!!error ? '!border-red-500 pe-8' : ''} ${className ?? ''}`}
                 {...props}
             />
             {error && (

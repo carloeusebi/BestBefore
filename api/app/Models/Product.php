@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\Category;
 use Database\Factories\ProductFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -48,6 +49,19 @@ final class Product extends Model
             'name' => $this->name,
             'brand' => (string) $this->brand,
             'description' => (string) $this->description,
+            'category' => (string) $this->category?->value,
+        ];
+    }
+
+    /**
+     * @return array{
+     *     category: 'App\Enums\Category'
+     * }
+     */
+    protected function casts(): array
+    {
+        return [
+            'category' => Category::class,
         ];
     }
 }

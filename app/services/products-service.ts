@@ -11,7 +11,7 @@ export default {
         const { data } = await axiosInstance.get<Product[]>(`/api/products`, { params: { q: query } });
         return data ?? [];
     },
-    async createProduct(payload: { name: string; description?: string | null; brand?: string | null; barcode?: string }) {
+    async createProduct(payload: Partial<Product>) {
         const { data } = await axiosInstance.post<{ data: Product }>(`/api/products`, payload);
         return data.data;
     },
