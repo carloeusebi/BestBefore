@@ -21,7 +21,7 @@ final class ExpirationFactory extends Factory
     public function definition(): array
     {
         return [
-            'expires_at' => Carbon::now(), //
+            'expires_at' => now()->addMonth(), //
             'quantity' => fake()->randomNumber(),
             'notification_method' => fake()->randomElement(NotificationMethod::cases()),
             'notes' => fake()->word(),

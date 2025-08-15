@@ -1,12 +1,17 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
-import { useSession } from '@/context/auth-context';
 import { Alert, Platform } from 'react-native';
 import { router } from 'expo-router';
 
 const baseURL = process.env.EXPO_PUBLIC_API_BASE_URL;
 
 const logoutUser = async () => {
+    const user = () => {
+        return Platform.OS === 'web' ? localStorage.getItem('user') : SecureStore.getItemAsync('user');
+    };
+
+    if (!user()) return;
+
     if (Platform.OS === 'web') {
         localStorage.removeItem('session');
         localStorage.removeItem('user');

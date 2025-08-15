@@ -1,6 +1,6 @@
 import { Picker } from '@react-native-picker/picker';
 import { ComponentProps } from 'react';
-import { Text, View } from 'react-native';
+import { View } from 'react-native';
 
 type SelectProps<T, K extends keyof T> = {
     items: T[];

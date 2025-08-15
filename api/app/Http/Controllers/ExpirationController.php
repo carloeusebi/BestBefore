@@ -9,19 +9,20 @@ use App\Models\Expiration;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\ResourceCollection;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
 final class ExpirationController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): ResourceCollection|JsonResponse
     {
         $expirations = $request->user()?->expirations()
             ->with('product')
             ->orderBy('expires_at')
             ->paginate();
 
-        return $expirations->toResourceCollection();
+        return $expirations?->toResourceCollection() ?? response()->json();
     }
 
     public function store(ExpirationRequest $request): JsonResponse

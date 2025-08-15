@@ -48,7 +48,7 @@ it('can store a product', function (): void {
         'category' => $category = Category::random(),
     ])->assertCreated();
 
-    $response->assertJson(fn (AssertableJson $json) => $json
+    $response->assertJson(fn (AssertableJson $json): AssertableJson => $json
         ->has('id')
         ->has('name')
         ->etc()
@@ -98,7 +98,7 @@ it('returns a product', function (): void {
 
     $response = getJson(route('products.show', ['product' => $product]))->assertOk();
 
-    $response->assertJson(fn (AssertableJson $json) => $json
+    $response->assertJson(fn (AssertableJson $json): AssertableJson => $json
         ->where('id', $product->id)
         ->where('name', $product->name)
         ->where('barcode', $product->barcode->barcode)

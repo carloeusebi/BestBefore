@@ -41,7 +41,7 @@ enum Category: string
         /** Using cryptographically secure random_int for better randomization */
         $cases = self::cases();
 
-        return $cases[rand(0, count($cases) - 1)];
+        return $cases[random_int(0, count($cases) - 1)];
     }
 
     /**

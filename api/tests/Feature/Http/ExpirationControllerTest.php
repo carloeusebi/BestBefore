@@ -16,7 +16,7 @@ beforeEach(function (): void {
     Sanctum::actingAs($this->user = User::factory()->create());
 });
 
-it('lists user\'s expirations sorted by expiration date', function (): void {
+it("lists user's expirations sorted by expiration date", function (): void {
     $middle = Expiration::factory()->for($this->user)->create(['expires_at' => now()->addDays(15)]);
     $closer = Expiration::factory()->for($this->user)->create(['expires_at' => now()->addDay()]);
     $further = Expiration::factory()->for($this->user)->create(['expires_at' => now()->addDays(30)]);
@@ -24,7 +24,7 @@ it('lists user\'s expirations sorted by expiration date', function (): void {
     $response = getJson(route('expirations.index'))->assertOk();
 
     $response
-        ->assertJson(fn (AssertableJson $json) => $json
+        ->assertJson(fn (AssertableJson $json): AssertableJson => $json
             ->has('data', 3)
             ->where('data.0.id', $closer->id)
             ->where('data.1.id', $middle->id)
@@ -39,7 +39,7 @@ it('does not return expirations from other users', function (): void {
 
     $response = getJson(route('expirations.index'))->assertOk();
 
-    $response->assertJson(fn (AssertableJson $json) => $json
+    $response->assertJson(fn (AssertableJson $json): AssertableJson => $json
         ->has('data', 1)
         ->etc()
     );
@@ -52,7 +52,18 @@ it('can create a new expiration', function (): void {
         ->assertValid()
         ->assertCreated();
 
-    $response->assertJson(fn (AssertableJson $json) => $json->hasAll(['id', 'expires_at', 'expires_in', 'quantity', 'notes', 'product', 'created_at', 'updated_at']));
+    $response->assertJson(fn (AssertableJson $json): AssertableJson => $json->hasAll([
+        'id',
+        'expires_at',
+        'expires_in',
+        'quantity',
+        'notes',
+        'product',
+        'created_at',
+        'updated_at',
+        'expires_in',
+        'is_expired',
+    ]));
 
     assertDatabaseHas('expirations', [
         'expires_at' => $data['expires_at'],
