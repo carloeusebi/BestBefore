@@ -3,6 +3,8 @@ import { ConfigContext, ExpoConfig } from '@expo/config';
 const IS_DEV = process.env.APP_VARIANT === 'development';
 const IS_PREVIEW = process.env.APP_VARIANT === 'preview';
 
+const APP_ENV = process.env.APP_VARIANT || 'production';
+
 const getUniqueIdentifier = () => {
     if (IS_DEV) {
         return 'com.bestbefore.app.dev';
@@ -76,11 +78,20 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
                 backgroundColor: '#ffffff',
             },
         ],
+        [
+            '@sentry/react-native/expo',
+            {
+                url: 'https://sentry.io/',
+                project: 'react-native',
+                organization: 'bestbefore',
+            },
+        ],
     ],
     experiments: {
         typedRoutes: true,
     },
     extra: {
+        appVariant: APP_ENV,
         router: {},
         eas: {
             projectId: '9c35470a-d4b0-4345-8975-50c0a38cc869',
