@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from 'react';
 import { SectionList, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import productsService from '@/services/products-service';
+import recentProductsService from '@/services/recent-products-service';
 import { Product } from '@/types';
 import { Button } from '@/components/button';
 import { router } from 'expo-router';
-import { useStorageState } from '@/hooks/use-storage-state';
 import { PlusIcon } from 'lucide-react-native';
 import ProductCard from '@/components/product-card';
 
@@ -16,35 +16,16 @@ export default function SelectProduct() {
     const [results, setResults] = useState<Product[]>([]);
     const [loading, setLoading] = useState(false);
 
-    // Recent selections persistence
-    const RECENTS_KEY = 'recent_products';
-    const [[recLoading, recentsRaw], setRecentsRaw] = useStorageState(RECENTS_KEY);
+    // Recent selections persistence via service
     const [recents, setRecents] = useState<Product[]>([]);
 
     useEffect(() => {
-        if (!recLoading) {
-            if (recentsRaw) {
-                try {
-                    const parsed = JSON.parse(recentsRaw) as Product[];
-                    if (Array.isArray(parsed)) setRecents(parsed);
-                } catch (e) {
-                    console.error('Error parsing recents', e);
-                    setRecents([]);
-                }
-            } else {
-                setRecents([]);
-            }
-        }
-    }, [recLoading, recentsRaw]);
-
-    const saveRecents = (items: Product[]) => {
-        try {
+        const load = async () => {
+            const items = await recentProductsService.getRecents();
             setRecents(items);
-            setRecentsRaw(JSON.stringify(items));
-        } catch (e) {
-            console.error('Error saving recents', e);
-        }
-    };
+        };
+        void load();
+    }, []);
 
     // Debounce query input
     useEffect(() => {
@@ -79,12 +60,10 @@ export default function SelectProduct() {
     }, [debouncedQuery]);
 
     const onSelectProduct = (product: Product) => {
-        // Update recents: move to front, dedupe by id, cap 10
-        const existingIdx = recents.findIndex((p) => p.id === product.id);
-        const updated = [product, ...recents.filter((p, idx) => idx !== existingIdx && p.id !== product.id)].slice(0, 10);
-        setTimeout(() => {
-            saveRecents(updated);
-        }, 500);
+        // Update recents via service: move to front, dedupe by id, cap 10
+        void recentProductsService.addRecent(product).then(setRecents).catch((e) => {
+            console.error('Error updating recents', e);
+        });
 
         const params = { product: JSON.stringify(product) };
         router.push({ pathname: '/(app)/create-expiration', params });

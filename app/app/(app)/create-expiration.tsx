@@ -11,6 +11,7 @@ import Spacer from '@/components/spacer';
 import Input from '@/components/input';
 import ProductCard from '@/components/product-card';
 import { FormField } from '@/components/form-field';
+import recentProductsService from '@/services/recent-products-service';
 
 type ExpirationForm = Partial<{
     product_id: Expiration['product_id'];
@@ -42,9 +43,12 @@ export default function CreateExpiration() {
                 .then(({ data }) => {
                     setProduct(data);
                 })
-                .catch((err) => {
+                .catch(async (err) => {
                     if (isAxiosError(err) && err.response?.status === 404) {
                         Alert.alert('Errore', 'Prodotto non trovato. Riprova.');
+
+                        await removeFromRecent(parsedProduct.id);
+
                         router.back();
                     } else console.error(err);
                 });
@@ -113,6 +117,10 @@ export default function CreateExpiration() {
             </Text>
         </TouchableOpacity>
     );
+
+    const removeFromRecent = async (productId: Product['id']) => {
+        await recentProductsService.removeRecent(productId);
+    };
 
     return (
         <SafeAreaView edges={['top']} className="flex-1 bg-white px-4 dark:bg-gray-900">

@@ -239,7 +239,11 @@ export default function ExpirationDetail() {
                         disabled={deleting}
                         className="flex-1 items-center justify-center rounded border border-red-600 py-3 disabled:opacity-60"
                     >
-                        <Text className="font-semibold text-red-700 dark:text-red-400">{deleting ? 'Eliminazione…' : 'Elimina'}</Text>
+                        {deleting ? (
+                            <ActivityIndicator color={colors.error} />
+                        ) : (
+                            <Text className="font-semibold text-red-700 dark:text-red-400">Elimina</Text>
+                        )}
                     </TouchableOpacity>
                 </View>
 

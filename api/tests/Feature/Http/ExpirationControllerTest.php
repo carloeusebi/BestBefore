@@ -55,11 +55,14 @@ it('can create a new expiration', function (): void {
 
     $response->assertJson(fn (AssertableJson $json): AssertableJson => $json->hasAll([
         'id',
+        'product_id',
         'expires_at',
         'expires_in',
         'quantity',
         'notes',
         'product',
+        'notification_days_before',
+        'notification_method',
         'created_at',
         'updated_at',
         'expires_in',
