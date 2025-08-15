@@ -36,7 +36,7 @@ final class ProductController extends Controller
 
     public function store(ProductRequest $request): JsonResponse
     {
-        $product = new Product($request->only(['name', 'description', 'brand']));
+        $product = new Product($request->only(['name', 'description', 'brand', 'category']));
 
         if ($request->has('barcode')) {
             $barcode = Barcode::firstOrCreate(['barcode' => $request->input('barcode')]);

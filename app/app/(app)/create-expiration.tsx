@@ -10,6 +10,7 @@ import { isAxiosError } from 'axios';
 import Spacer from '@/components/spacer';
 import Input from '@/components/input';
 import ProductCard from '@/components/product-card';
+import { FormField } from '@/components/form-field';
 
 type ExpirationForm = Partial<{
     product_id: Expiration['product_id'];
@@ -82,9 +83,10 @@ export default function CreateExpiration() {
         } catch (e) {
             if (isAxiosError(e) && e.response?.status === 422)
                 setErrors(
-                    Object.fromEntries(
-                        Object.entries(e.response.data.errors as ValidationErrors<ExpirationForm>).map(([key, value]) => [key, value[0]]),
-                    ) as Record<keyof ExpirationForm, string>,
+                    Object.fromEntries(Object.entries(e.response.data.errors as ValidationErrors).map(([key, value]) => [key, value[0]])) as Record<
+                        keyof ExpirationForm,
+                        string
+                    >,
                 );
             else {
                 console.error(e);
@@ -119,25 +121,18 @@ export default function CreateExpiration() {
             )}
 
             <View className="gap-3">
-                <View className="gap-2">
-                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Data di scadenza</Text>
-                    <Datepicker
-                        date={form.expires_at as Date | undefined}
-                        error={errors?.expires_at}
-                        onDateChange={(date) => setFormData('expires_at', date)}
-                    />
-                </View>
+                <FormField label="Data di scadenza" error={errors?.expires_at}>
+                    <Datepicker date={form.expires_at as Date | undefined} onDateChange={(date) => setFormData('expires_at', date)} />
+                </FormField>
 
-                <View className="gap-2">
-                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Giorni prima per notifica</Text>
+                <FormField label="Giorni prima per notifica" error={errors?.notification_days_before}>
                     <Input
                         value={form.notification_days_before?.toString() ?? ''}
-                        error={errors?.notification_days_before}
                         onChangeText={(value) => setFormData('notification_days_before', value)}
                         className="h-12 rounded border border-gray-300 bg-white px-3 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                         keyboardType="numeric"
                     />
-                </View>
+                </FormField>
 
                 <View className="gap-2">
                     <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Metodo di notifica</Text>
@@ -151,28 +146,24 @@ export default function CreateExpiration() {
                     </View>
                 </View>
 
-                <View className="gap-2">
-                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Quantità (opzionale)</Text>
+                <FormField label="Quantità (opzionale)" error={errors?.quantity}>
                     <Input
-                        error={errors?.quantity}
                         value={form.quantity?.toString() ?? ''}
                         onChangeText={(value) => setFormData('quantity', value)}
                         className="h-12 rounded border border-gray-300 bg-white px-3 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                         keyboardType="numeric"
                     />
-                </View>
+                </FormField>
 
-                <View className="gap-2">
-                    <Text className="text-sm font-medium text-gray-800 dark:text-gray-200">Note (opzionali)</Text>
+                <FormField label="Note (opzionali)" error={errors?.notes}>
                     <Input
-                        error={errors?.notes}
                         placeholder="Aggiungi note"
                         value={form.notes ?? ''}
                         onChangeText={(value) => setFormData('notes', value)}
                         className="min-h-12 rounded border border-gray-300 bg-white px-3 text-black dark:border-gray-700 dark:bg-gray-800 dark:text-white"
                         multiline
                     />
-                </View>
+                </FormField>
 
                 <Spacer />
 

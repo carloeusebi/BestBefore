@@ -13,11 +13,11 @@ export default {
     },
     async createProduct(payload: Partial<Product>) {
         const { data } = await axiosInstance.post<{ data: Product }>(`/api/products`, payload);
-        return data.data;
+        return data;
     },
     async createProductForBarcode(payload: { name: string; barcode: string; description?: string | null; brand?: string | null }) {
         const { data } = await axiosInstance.post<{ data: Product }>(`/api/products`, payload);
-        return data.data;
+        return data;
     },
     async getProductById(productId: Product['id']) {
         return await axiosInstance.get<Product>(`/api/products/${productId}`);

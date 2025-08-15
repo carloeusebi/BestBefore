@@ -41,17 +41,24 @@ it('requires at least three characters', function (): void {
 });
 
 it('can store a product', function (): void {
-    postJson(route('products.store'), [
+    $response = postJson(route('products.store'), [
         'name' => $name = 'Test Product',
         'description' => $description = 'Test Product Description',
         'brand' => $brand = 'Test Brand',
-        'category' => Category::random(),
+        'category' => $category = Category::random(),
     ])->assertCreated();
+
+    $response->assertJson(fn (AssertableJson $json) => $json
+        ->has('id')
+        ->has('name')
+        ->etc()
+    );
 
     assertDatabaseHas('products', [
         'name' => $name,
         'description' => $description,
         'brand' => $brand,
+        'category' => $category,
     ]);
 });
 

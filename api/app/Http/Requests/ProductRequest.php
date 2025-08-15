@@ -24,4 +24,18 @@ final class ProductRequest extends FormRequest
             'category' => ['required', Rule::enum(Category::class)],
         ];
     }
+
+    /**
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'nome',
+            'description' => 'descrizione',
+            'barcode' => 'codice a barre',
+            'brand' => 'marca',
+            'category' => 'categoria',
+        ];
+    }
 }
