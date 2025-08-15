@@ -17,8 +17,13 @@ final class ExpirationController extends Controller
 {
     public function index(Request $request): ResourceCollection|JsonResponse
     {
+        $request->validate([
+            'product' => ['sometimes', 'exists:products,id'],
+        ]);
+
         $expirations = $request->user()?->expirations()
             ->with('product')
+            ->when($request->has('product'), fn ($query) => $query->where('product_id', $request->input('product')))
             ->orderBy('expires_at')
             ->paginate();
 

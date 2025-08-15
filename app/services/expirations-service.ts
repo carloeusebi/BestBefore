@@ -6,9 +6,12 @@ type Payload = Partial<Record<keyof Expiration, unknown>>;
 const endpoint = 'api/expirations';
 
 export default {
-    async getExpirations(page?: number) {
+    async getExpirations(page?: number, filters?: { product?: string }) {
+        const params: Record<string, unknown> = {};
+        if (page) params.page = page;
+        if (filters?.product) params.product = filters.product;
         const { data } = await axiosInstance.get<LaravelPaginatedResponse<Expiration>>(endpoint, {
-            params: page ? { page } : undefined,
+            params: Object.keys(params).length ? params : undefined,
         });
         return data;
     },

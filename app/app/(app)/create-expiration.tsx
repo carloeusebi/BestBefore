@@ -82,16 +82,10 @@ export default function CreateExpiration() {
                 ...form,
                 expires_at: (form.expires_at as Date | undefined)?.toDateString(),
             });
-            Alert.alert('Successo', 'Scadenza creata correttamente.', [
-                {
-                    text: 'OK',
-                    onPress: () => router.replace('/(app)/(tabs)'),
-                },
-            ]);
+
             router.replace('/(app)/(tabs)');
         } catch (e) {
             if (isAxiosError(e) && e.response?.status === 422) {
-                console.log(e.response.data.errors);
                 setErrors(
                     Object.fromEntries(Object.entries(e.response.data.errors as ValidationErrors).map(([key, value]) => [key, value[0]])) as Record<
                         keyof ExpirationForm,

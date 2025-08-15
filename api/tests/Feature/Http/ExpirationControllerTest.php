@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 use App\Models\Expiration;
+use App\Models\Product;
 use App\Models\User;
 use Illuminate\Testing\Fluent\AssertableJson;
 use Laravel\Sanctum\Sanctum;
@@ -70,6 +71,19 @@ it('can create a new expiration', function (): void {
         'user_id' => $this->user->id,
         'product_id' => $data['product_id'],
     ]);
+});
+
+it('filters expirations by product', function (): void {
+    $product = Product::factory()->create();
+    $expirations = Expiration::factory(3)->for($this->user)->for($product)->create();
+    Expiration::factory(3)->for($this->user)->create();
+
+    $response = getJson(route('expirations.index', ['product' => $product->id]))->assertOk();
+
+    $response->assertJson(fn (AssertableJson $json): AssertableJson => $json
+        ->has('data', $expirations->count())
+        ->etc()
+    );
 });
 
 it('can update an expiration', function (): void {

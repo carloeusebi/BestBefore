@@ -18,7 +18,7 @@ final class ExpirationRequest extends FormRequest
     {
         return [
             'product_id' => ['required', 'exists:products,id'],
-            'expires_at' => ['required', 'date', 'after:today'],
+            'expires_at' => ['required', 'date', Rule::date()->after(now()->addDay())],
             'quantity' => ['required', 'integer'],
             'notes' => ['nullable'],
             'notification_days_before' => ['sometimes', 'integer', 'min:1'],
@@ -38,6 +38,16 @@ final class ExpirationRequest extends FormRequest
             'notes' => 'note',
             'notification_days_before' => 'giorni prima',
             'notification_method' => 'metodo di notifica',
+        ];
+    }
+
+    /**
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'expires_at.after' => 'La data di scadenza deve essere nel futuro',
         ];
     }
 }
