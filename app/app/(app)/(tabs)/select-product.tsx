@@ -61,9 +61,12 @@ export default function SelectProduct() {
 
     const onSelectProduct = (product: Product) => {
         // Update recents via service: move to front, dedupe by id, cap 10
-        void recentProductsService.addRecent(product).then(setRecents).catch((e) => {
-            console.error('Error updating recents', e);
-        });
+        void recentProductsService
+            .addRecent(product)
+            .then(setRecents)
+            .catch((e) => {
+                console.error('Error updating recents', e);
+            });
 
         const params = { product: JSON.stringify(product) };
         router.push({ pathname: '/(app)/create-expiration', params });
