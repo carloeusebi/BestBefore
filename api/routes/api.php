@@ -23,7 +23,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
     Route::post('/products', [ProductController::class, 'store'])->name('products.store');
 
-    Route::post('/expirations', [ExpirationController::class, 'store'])->name('expirations.store');
+    Route::apiResource('/expirations', ExpirationController::class)->names('expirations');
 
     Route::get('/barcodes/{barcode}/products', BarcodeProductController::class)->name('barcodes.products.index');
 });

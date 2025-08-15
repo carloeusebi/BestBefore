@@ -34,5 +34,26 @@ export interface Expiration {
     user_id: string;
     product_id: string;
     product?: Product;
-    user?: User;
+
+    is_expired?: boolean;
+    expires_in?: string;
+}
+
+export interface LaravelPaginatedResponse<T> {
+    data: T[];
+    links?: {
+        first: string;
+        last: string;
+        prev: string | null;
+        next: string | null;
+    };
+    meta: {
+        current_page: number;
+        from: number;
+        last_page: number;
+        path: string;
+        per_page: number;
+        to: number;
+        total: number;
+    };
 }

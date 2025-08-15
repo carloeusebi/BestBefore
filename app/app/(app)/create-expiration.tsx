@@ -1,7 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { Alert, View, Text, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { Expiration, Product, ValidationErrors } from '@/types';
 import expirationsService from '@/services/expirations-service';
 import productsService from '@/services/products-service';
@@ -43,7 +43,10 @@ export default function CreateExpiration() {
                     setProduct(data);
                 })
                 .catch((err) => {
-                    throw err;
+                    if (isAxiosError(err) && err.response?.status === 404) {
+                        Alert.alert('Errore', 'Prodotto non trovato. Riprova.');
+                        router.back();
+                    } else console.error(err);
                 });
         } catch (err) {
             console.error(err);
@@ -55,7 +58,7 @@ export default function CreateExpiration() {
     const [form, setForm] = useState<ExpirationForm>({
         product_id: product?.id,
         expires_at: undefined,
-        quantity: undefined,
+        quantity: 1,
         notes: '',
         notification_days_before: 1,
         notification_method: 'both',
@@ -65,6 +68,11 @@ export default function CreateExpiration() {
     const setFormData = <T extends keyof typeof form>(key: T, value: (typeof form)[T]) => {
         setForm((prev) => ({ ...prev, [key]: value }));
     };
+
+    useEffect(() => {
+        setFormData('product_id', product?.id);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [product?.id]);
 
     const onSubmit = async () => {
         try {
@@ -80,15 +88,17 @@ export default function CreateExpiration() {
                     onPress: () => router.replace('/(app)/(tabs)'),
                 },
             ]);
+            router.replace('/(app)/(tabs)');
         } catch (e) {
-            if (isAxiosError(e) && e.response?.status === 422)
+            if (isAxiosError(e) && e.response?.status === 422) {
+                console.log(e.response.data.errors);
                 setErrors(
                     Object.fromEntries(Object.entries(e.response.data.errors as ValidationErrors).map(([key, value]) => [key, value[0]])) as Record<
                         keyof ExpirationForm,
                         string
                     >,
                 );
-            else {
+            } else {
                 console.error(e);
                 Alert.alert('Errore', 'Impossibile creare la scadenza. Riprova.');
             }

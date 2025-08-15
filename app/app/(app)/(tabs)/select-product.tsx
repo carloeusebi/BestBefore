@@ -6,8 +6,6 @@ import { Product } from '@/types';
 import { Button } from '@/components/button';
 import { router } from 'expo-router';
 import { useStorageState } from '@/hooks/use-storage-state';
-import { categories } from '@/lib/categories';
-import { useThemeColors } from '@/hooks/use-theme-colors';
 import { PlusIcon } from 'lucide-react-native';
 import ProductCard from '@/components/product-card';
 
@@ -16,8 +14,7 @@ export default function SelectProduct() {
     const [debouncedQuery, setDebouncedQuery] = useState('');
     const [error, setError] = useState<string | null>(null);
     const [results, setResults] = useState<Product[]>([]);
-
-    const colors = useThemeColors();
+    const [loading, setLoading] = useState(false);
 
     // Recent selections persistence
     const RECENTS_KEY = 'recent_products';
@@ -57,6 +54,7 @@ export default function SelectProduct() {
 
     useEffect(() => {
         const search = async () => {
+            setLoading(true);
             if (!debouncedQuery) {
                 setResults([]);
                 setError(null);
@@ -72,6 +70,8 @@ export default function SelectProduct() {
             } catch (e) {
                 console.error(e);
                 setError('Errore durante la ricerca');
+            } finally {
+                setLoading(false);
             }
         };
 
@@ -136,7 +136,7 @@ export default function SelectProduct() {
 
             {!!error && <Text className="my-2 text-sm text-red-600">{error}</Text>}
 
-            {debouncedQuery.length > 0 && results.length === 0 && !error && (
+            {debouncedQuery.length > 0 && results.length === 0 && !error && !loading && (
                 <Text className="my-2 text-sm text-gray-600 dark:text-gray-300">Nessun prodotto trovato</Text>
             )}
 
