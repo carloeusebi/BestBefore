@@ -88,6 +88,14 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
                 organization: 'bestbefore',
             },
         ],
+        [
+            'expo-build-properties',
+            {
+                android: {
+                    enableProguardInReleaseBuilds: true,
+                },
+            },
+        ],
     ],
     experiments: {
         typedRoutes: true,
