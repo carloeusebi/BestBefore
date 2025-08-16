@@ -17,11 +17,11 @@ const getUniqueIdentifier = () => {
 
 const getAppName = () => {
     if (IS_DEV) {
-        return 'BestBefore (Dev)';
+        return '(Dev) BestBefore';
     }
 
     if (IS_PREVIEW) {
-        return 'BestBefore (Preview)';
+        return '(Preview) BestBefore';
     }
 
     return 'BestBefore';

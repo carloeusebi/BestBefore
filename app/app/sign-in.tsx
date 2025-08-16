@@ -37,8 +37,8 @@ export default function WelcomeScreen() {
             return data;
         } catch (error) {
             console.error('Error retrieving user data:', error);
-            if (isAxiosError(error) && error.response?.data.message) {
-                Alert.alert('Errore', error.response?.data.message);
+            if (isAxiosError(error) && error.response?.data.error) {
+                Alert.alert('Errore', error.response?.data.error);
             } else {
                 Alert.alert('Errore', 'Si è verificato un errore inatteso.');
             }
