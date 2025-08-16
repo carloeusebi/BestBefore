@@ -7,6 +7,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 final class AuthenticatedUserController extends Controller
 {
@@ -36,5 +37,24 @@ final class AuthenticatedUserController extends Controller
         $user->save();
 
         return response()->json($user->toResource());
+    }
+
+    public function destroy(Request $request): JsonResponse
+    {
+        /** @var User $user */
+        $user = $request->user();
+
+        DB::transaction(function () use ($user): void {
+            // Revoke all API tokens first (Sanctum)
+            $user->tokens()->delete();
+
+            // Manually delete related data to satisfy FK constraints (SQLite in tests does not cascade by default)
+            $user->expirations()->delete();
+
+            // Finally delete the user
+            $user->delete();
+        });
+
+        return response()->json(null, 204);
     }
 }

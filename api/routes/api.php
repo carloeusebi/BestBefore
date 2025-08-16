@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/auth/user', [AuthenticatedUserController::class, 'show'])->name('user.show');
     Route::patch('/auth/user', [AuthenticatedUserController::class, 'update'])->name('user.update');
+    Route::delete('/auth/user', [AuthenticatedUserController::class, 'destroy'])->name('user.destroy');
 
     Route::post('/expo-push-token', [ExpoPushTokenController::class, 'store'])->name('expo-push-token.store');
 

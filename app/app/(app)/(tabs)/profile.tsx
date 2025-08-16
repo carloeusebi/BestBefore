@@ -14,7 +14,7 @@ export default function Profile() {
     const [pushNotifications, setPushNotifications] = useState<boolean>(user?.notifyByPush ?? true);
 
     useEffect(() => {
-        // Sync with user changes coming from context (e.g., reload)
+        // Sincronizza con i cambiamenti dell'utente dal contesto (es. ricarica)
         setEmailNotifications(user?.notifyByEmail ?? true);
         setPushNotifications(user?.notifyByPush ?? true);
     }, [user?.notifyByEmail, user?.notifyByPush]);
@@ -22,6 +22,31 @@ export default function Profile() {
     const handleLogout = async () => {
         await signOut();
         router.replace('/sign-in');
+    };
+
+    const handleDeleteAccount = async () => {
+        Alert.alert(
+            'Elimina account',
+            'Questa azione è irreversibile. Verranno eliminati il tuo account e i dati associati idonei. Confermi di voler procedere?',
+            [
+                { text: 'Annulla', style: 'cancel' },
+                {
+                    text: 'Elimina account',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await usersService.deleteAccount();
+                            Alert.alert('Account eliminato', 'Il tuo account è stato eliminato con successo.');
+                            await signOut();
+                            router.replace('/sign-in');
+                        } catch (error) {
+                            console.error('Errore eliminazione account', error);
+                            Alert.alert('Errore', "Impossibile eliminare l'account in questo momento. Riprova più tardi.");
+                        }
+                    },
+                },
+            ],
+        );
     };
 
     const persistSettings = async (next?: { email?: boolean; push?: boolean }) => {
@@ -91,12 +116,17 @@ export default function Profile() {
                 </View>
 
                 <TouchableOpacity
-                    className="mt-10 h-[54px] w-full flex-row items-center justify-center rounded"
+                    className="mt-4 h-[54px] w-full flex-row items-center justify-center rounded"
                     style={{ backgroundColor: colors.primary }}
                     onPress={handleLogout}
                 >
                     <Text className="text-lg font-semibold text-white">Logout</Text>
                 </TouchableOpacity>
+                <View className="mt-3 justify-center">
+                    <TouchableOpacity className="flex-row items-center justify-center" onPress={handleDeleteAccount}>
+                        <Text className="text-base font-semibold text-red-500">Elimina account</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
         </SafeAreaView>
     );

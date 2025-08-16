@@ -6,4 +6,8 @@ export default {
         const { data } = await axiosInstance.patch<User>('/api/auth/user', payload);
         return data;
     },
+
+    async deleteAccount(): Promise<void> {
+        await axiosInstance.delete('/api/auth/user');
+    },
 };
