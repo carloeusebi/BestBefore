@@ -5,10 +5,14 @@ import { SessionProvider, useSession } from '@/context/auth-context';
 import { StatusBar } from 'expo-status-bar';
 import * as Sentry from '@sentry/react-native';
 
+const environment = process.env.EXPO_PUBLIC_APP_ENV || 'production';
+
 Sentry.init({
     dsn: 'https://f36169899d815f57e1772719b0d269de@o4509849643909120.ingest.de.sentry.io/4509849645154384',
 
-    environment: process.env.EXPO_PUBLIC_APP_ENV || 'production',
+    environment,
+
+    enabled: !['local', 'development'].includes(environment),
 
     // Adds more context data to events (IP address, cookies, user, etc.)
     // For more information, visit: https://docs.sentry.io/platforms/react-native/data-management/data-collected/
