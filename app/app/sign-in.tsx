@@ -1,4 +1,4 @@
-import { ActivityIndicator, Alert, Button, Image, Text, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Alert, Image, Text, TouchableOpacity, View } from 'react-native';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';

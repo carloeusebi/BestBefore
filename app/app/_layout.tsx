@@ -4,6 +4,13 @@ import { ThemeProvider, useTheme } from '@/context/theme-context';
 import { SessionProvider, useSession } from '@/context/auth-context';
 import { StatusBar } from 'expo-status-bar';
 import * as Sentry from '@sentry/react-native';
+import * as Notification from 'expo-notifications';
+import * as Device from 'expo-device';
+import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
+import { colors } from '@/constants/colors';
+import Constants from 'expo-constants';
+import axiosInstance from '@/config/axios-config';
 
 const environment = process.env.EXPO_PUBLIC_APP_ENV || 'production';
 
@@ -27,9 +34,32 @@ Sentry.init({
     // spotlight: __DEV__,
 });
 
+Notification.setNotificationHandler({
+    handleNotification: async () => ({
+        shouldPlaySound: true,
+        shouldSetBadge: true,
+        shouldShowBanner: true,
+        shouldShowList: true,
+    }),
+});
+
 function Header() {
     const { currentTheme } = useTheme();
-    const { session, isLoading } = useSession();
+    const { session, isLoading, user } = useSession();
+
+    const [expoPushToken, setExpoPushToken] = useState('');
+
+    useEffect(() => {
+        registerForPushNotificationsAsync()
+            .then((token) => setExpoPushToken(token ?? ''))
+            .catch((error) => setExpoPushToken(`${error}`));
+    }, []);
+
+    useEffect(() => {
+        if (expoPushToken.trim() && user) {
+            void axiosInstance.post('api/expo-push-token', { expo_push_token: expoPushToken });
+        }
+    }, [expoPushToken, user]);
 
     if (session && !isLoading) {
         return (
@@ -53,3 +83,47 @@ export default Sentry.wrap(function RootLayout() {
         </SessionProvider>
     );
 });
+
+function handleRegistrationError(error: string) {
+    alert(error);
+    throw new Error(error);
+}
+
+async function registerForPushNotificationsAsync() {
+    if (Platform.OS === 'android') {
+        await Notification.setNotificationChannelAsync('default', {
+            name: 'default',
+            importance: Notification.AndroidImportance.MAX,
+            vibrationPattern: [0, 250, 250, 250],
+            lightColor: colors.light.primary,
+        });
+    }
+
+    if (Device.isDevice) {
+        const { status: existingStatus } = await Notification.getPermissionsAsync();
+        let finalStatus = existingStatus;
+        if (existingStatus !== 'granted') {
+            const { status } = await Notification.requestPermissionsAsync();
+            finalStatus = status;
+        }
+        if (finalStatus !== 'granted') {
+            handleRegistrationError('Permission not granted to get push token for push notification!');
+            return;
+        }
+        const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
+        if (!projectId) {
+            handleRegistrationError('Project ID not found');
+        }
+        try {
+            return (
+                await Notification.getExpoPushTokenAsync({
+                    projectId,
+                })
+            ).data;
+        } catch (e: unknown) {
+            handleRegistrationError(`${e}`);
+        }
+    } else {
+        handleRegistrationError('Must use physical device for push notifications');
+    }
+}

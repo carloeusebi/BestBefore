@@ -49,6 +49,7 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
         edgeToEdgeEnabled: true,
         package: getUniqueIdentifier(),
         permissions: ['android.permission.CAMERA'],
+        googleServicesFile: process.env.GOOGLE_SERVICES_JSON ?? './google-services.json',
     },
     web: {
         bundler: 'metro',

@@ -6,6 +6,7 @@ use App\Http\Controllers\AuthenticatedSessionController;
 use App\Http\Controllers\AuthenticatedUserController;
 use App\Http\Controllers\BarcodeProductController;
 use App\Http\Controllers\ExpirationController;
+use App\Http\Controllers\ExpoPushTokenController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,6 +19,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/auth/user', [AuthenticatedUserController::class, 'show'])->name('user.show');
     Route::patch('/auth/user', [AuthenticatedUserController::class, 'update'])->name('user.update');
+
+    Route::post('/expo-push-token', [ExpoPushTokenController::class, 'store'])->name('expo-push-token.store');
 
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');

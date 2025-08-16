@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
+use NotificationChannels\Expo\ExpoPushToken;
 
 final class User extends Authenticatable
 {
@@ -35,12 +36,23 @@ final class User extends Authenticatable
         return $this->hasMany(Expiration::class);
     }
 
+    public function routeNotificationForExpo(): ?ExpoPushToken
+    {
+        return $this->expo_push_token;
+    }
+
+    /**
+     * @return array{
+     *     expo_push_token: 'NotificationChannels\Expo\ExpoPushToken'
+     * }
+     */
     protected function casts(): array
     {
         return [
             'email_verified_at' => 'datetime',
             'notify_by_email' => 'boolean',
             'notify_by_push' => 'boolean',
+            'expo_push_token' => ExpoPushToken::class,
         ];
     }
 }
