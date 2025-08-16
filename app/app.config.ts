@@ -46,7 +46,6 @@ export default ({ config }: ConfigContext): ExpoConfig => ({
             foregroundImage: './assets/images/adaptive-icon.png',
             backgroundColor: '#ffffff',
         },
-        versionCode: 5,
         edgeToEdgeEnabled: true,
         package: getUniqueIdentifier(),
         permissions: ['android.permission.CAMERA'],
