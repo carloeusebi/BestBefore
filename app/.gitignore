@@ -44,3 +44,4 @@ app-example
 
 .env.local
 google-services.json
+service-account-file.json
