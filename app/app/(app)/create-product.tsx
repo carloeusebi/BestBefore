@@ -14,6 +14,7 @@ import { FormField } from '@/components/form-field';
 type ProductForm = Partial<{
     name: Product['name'];
     brand: Product['brand'];
+    barcode: string;
     description: Product['description'];
     category: Product['category'];
 }>;
@@ -28,6 +29,7 @@ export default function CreateProduct() {
     const [form, setForm] = useState<ProductForm>({
         name: '',
         brand: '',
+        barcode,
         description: '',
         category: '',
     });
