@@ -50,6 +50,13 @@ function Header() {
     const [expoPushToken, setExpoPushToken] = useState('');
 
     useEffect(() => {
+        if (!user) return;
+        const { id, email } = user;
+
+        Sentry.setUser({ id, email });
+    }, [user]);
+
+    useEffect(() => {
         registerForPushNotificationsAsync()
             .then((token) => setExpoPushToken(token ?? ''))
             .catch((error) => setExpoPushToken(`${error}`));

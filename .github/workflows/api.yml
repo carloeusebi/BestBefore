@@ -26,8 +26,8 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: 8.4
-          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite
-          coverage: none
+          tools: composer:v2
+          coverage: xdebug
 
       - name: Create SQLite database
         run: touch database.sqlite
@@ -42,4 +42,15 @@ jobs:
         run: php artisan key:generate
 
       - name: Run tests
-        run: php artisan test
+        run: composer test
+
+  deploy:
+    name: Deploy
+    needs: [ tests ]
+    if: ${{ needs.tests.result == 'success' }}
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Deploy to Production
+        run: |
+          curl -X POST ${{ secrets.DEPLOYMENT_WEBHOOK }}
