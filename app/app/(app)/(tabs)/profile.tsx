@@ -1,13 +1,16 @@
 import { View, Text, TouchableOpacity, Image, Switch, Alert } from 'react-native';
+import * as Notification from 'expo-notifications';
 import { useSession } from '@/context/auth-context';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors } from '@/hooks/use-theme-colors';
 import { router } from 'expo-router';
 import { useEffect, useState } from 'react';
 import usersService from '@/services/users-service';
+import { NotificationPermissionsStatus } from 'expo-notifications';
 
 export default function Profile() {
     const { user, signOut } = useSession();
+    const [notificationStatus, setNotificationStatus] = useState<NotificationPermissionsStatus['status']>();
     const colors = useThemeColors();
 
     const [emailNotifications, setEmailNotifications] = useState<boolean>(user?.notifyByEmail ?? true);
@@ -23,6 +26,15 @@ export default function Profile() {
         await signOut();
         router.replace('/sign-in');
     };
+
+    useEffect(() => {
+        Notification.getPermissionsAsync().then(({ status }) => {
+            setNotificationStatus(status);
+            if (status !== 'granted') {
+                setPushNotifications(false);
+            }
+        });
+    }, []);
 
     const handleDeleteAccount = async () => {
         Alert.alert(
@@ -75,7 +87,7 @@ export default function Profile() {
     const bothDisabled = !emailNotifications && !pushNotifications;
 
     return (
-        <SafeAreaView className="flex-1 bg-white dark:bg-gray-900">
+        <SafeAreaView edges={['top']} className="flex-1 bg-white dark:bg-gray-900">
             <View className="flex-1 px-5 pt-10">
                 <View className="items-center">
                     <Image source={{ uri: user?.avatar }} className="h-32 w-32 rounded-full border-4" style={{ borderColor: colors.primary }} />
@@ -99,8 +111,20 @@ export default function Profile() {
                             <Text className="text-base font-medium text-gray-800 dark:text-gray-100">Push</Text>
                             <Text className="text-sm text-gray-600 dark:text-gray-300">Ricevi notifiche push</Text>
                         </View>
-                        <Switch value={pushNotifications} onValueChange={onTogglePush} trackColor={{ true: colors.primary }} />
+                        <Switch
+                            disabled={notificationStatus !== 'granted'}
+                            value={pushNotifications}
+                            onValueChange={onTogglePush}
+                            trackColor={{ true: colors.primary }}
+                        />
                     </View>
+                    {notificationStatus !== 'granted' && (
+                        <View className="-mt-2">
+                            <Text className="text-xs text-red-500 dark:text-red-400">
+                                Per ricevere notifiche push, concedi le autorizzazioni necessarie nelle impostazioni del dispositivo.
+                            </Text>
+                        </View>
+                    )}
 
                     {bothDisabled && (
                         <View className="mt-4 rounded-md border border-amber-500 bg-amber-50 p-3 dark:border-amber-400 dark:bg-amber-900/20">
@@ -122,7 +146,7 @@ export default function Profile() {
                 >
                     <Text className="text-lg font-semibold text-white">Logout</Text>
                 </TouchableOpacity>
-                <View className="mt-3 justify-center">
+                <View className="my-3 justify-center">
                     <TouchableOpacity className="flex-row items-center justify-center" onPress={handleDeleteAccount}>
                         <Text className="text-base font-semibold text-red-500">Elimina account</Text>
                     </TouchableOpacity>

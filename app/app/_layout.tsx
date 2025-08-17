@@ -7,7 +7,7 @@ import * as Sentry from '@sentry/react-native';
 import * as Notification from 'expo-notifications';
 import * as Device from 'expo-device';
 import { useEffect, useState } from 'react';
-import { Platform } from 'react-native';
+import { Alert, Platform } from 'react-native';
 import { colors } from '@/constants/colors';
 import Constants from 'expo-constants';
 import axiosInstance from '@/config/axios-config';
@@ -92,7 +92,7 @@ export default Sentry.wrap(function RootLayout() {
 });
 
 function handleRegistrationError(error: string) {
-    alert(error);
+    Alert.alert('Errore', error);
     throw new Error(error);
 }
 
@@ -114,7 +114,6 @@ async function registerForPushNotificationsAsync() {
             finalStatus = status;
         }
         if (finalStatus !== 'granted') {
-            handleRegistrationError('Permission not granted to get push token for push notification!');
             return;
         }
         const projectId = Constants?.expoConfig?.extra?.eas?.projectId ?? Constants?.easConfig?.projectId;
