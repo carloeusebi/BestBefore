@@ -36,7 +36,7 @@ Sentry.init({
 
 Notification.setNotificationHandler({
     handleNotification: async () => ({
-        shouldPlaySound: true,
+        shouldPlaySound: false,
         shouldSetBadge: true,
         shouldShowBanner: true,
         shouldShowList: true,
