@@ -18,7 +18,7 @@ final class ExpirationRequest extends FormRequest
     {
         return [
             'product_id' => ['required', 'exists:products,id'],
-            'expires_at' => ['required', 'date', Rule::date()->after(now()->addDay())],
+            'expires_at' => ['required', 'date', Rule::date()->afterToday()],
             'quantity' => ['required', 'integer'],
             'notes' => ['nullable'],
             'notification_days_before' => ['sometimes', 'integer', 'min:1'],

@@ -49,7 +49,6 @@ export default function ExpirationCard({ expiration }: ExpirationCardProps) {
                         <Text className="text-base font-medium text-black dark:text-white" numberOfLines={1}>
                             {expiration.product?.name ?? 'Prodotto'}
                         </Text>
-                        <Text className="text-gray-700 dark:text-gray-300">{expiration.quantity}pz.</Text>
                         <View className="flex-row items-center gap-2">
                             {expiration.product?.brand ? (
                                 <Text className="text-xs text-gray-700 dark:text-gray-300" numberOfLines={1}>

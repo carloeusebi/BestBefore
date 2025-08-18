@@ -70,7 +70,7 @@ it('can create a new expiration', function (): void {
     ]));
 
     assertDatabaseHas('expirations', [
-        'expires_at' => $data['expires_at'],
+        'expires_at' => $data['expires_at']->timezone('UTC')->format('Y-m-d H:i:s'),
         'user_id' => $this->user->id,
         'product_id' => $data['product_id'],
     ]);

@@ -85,7 +85,7 @@
             </li>
             <li>
                 Oppure via email: invia un'email al nostro supporto a
-                <a href="mailto:{{ 'carloeusebi@gmail.com' }}?subject=Elimina%20il%20mio%20account%20{{ urlencode(config('app.name')) }}">{{ 'carloeusebi@gmail.com' }}</a>
+                <a href="mailto:info@.carloeusebideveloper.com?subject=Elimina%20il%20mio%20account%20{{ urlencode(config('app.name')) }}">info@.carloeusebideveloper.com</a>
                 dall'indirizzo email associato al tuo account.
             </li>
             <li>
@@ -125,7 +125,8 @@
         creare un nuovo account.</p>
 
     <h2>Domande</h2>
-    <p>Contatta il supporto a <a href="mailto:{{ 'carloeusebi@gmail.com' }}">{{ 'carloeusebi@gmail.com' }}</a>.</p>
+    <p>Contatta il supporto a <a href="mailto:info@.carloeusebideveloper.com">info@.carloeusebideveloper.com</a>.
+    </p>
 
     <p class="muted">Ultimo aggiornamento: {{ \Carbon\Carbon::now()->toDateString() }}</p>
 </div>
