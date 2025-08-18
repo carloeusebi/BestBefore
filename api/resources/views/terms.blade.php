@@ -73,7 +73,7 @@
         <li>L'accesso può avvenire tramite provider esterni (es. Google). Garantisci l'accuratezza dei dati del tuo
             profilo.
         </li>
-        <li>Se noti accessi sospetti, contattaci subito: <a href="mailto:info@.carloeusebideveloper.com">info@.carloeusebideveloper.com</a>.
+        <li>Se noti accessi sospetti, contattaci subito: <a href="mailto:info@carloeusebideveloper.com">info@carloeusebideveloper.com</a>.
         </li>
     </ul>
 
@@ -131,7 +131,7 @@
         paese.</p>
 
     <h2>10. Contatti</h2>
-    <p>Per domande sui termini: <a href="mailto:info@.carloeusebideveloper.com">info@.carloeusebideveloper.com</a>.
+    <p>Per domande sui termini: <a href="mailto:info@carloeusebideveloper.com">info@carloeusebideveloper.com</a>.
     </p>
 
     <p class="muted">Ultimo aggiornamento: {{ \Carbon\Carbon::now()->toDateString() }}</p>

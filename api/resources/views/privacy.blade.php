@@ -63,7 +63,7 @@
 
     <h2>1. Titolare del trattamento</h2>
     <p>Titolare: lo sviluppatore di {{ config('app.name') }}. Contatti: <a
-            href="mailto:info@.carloeusebideveloper.com">info@.carloeusebideveloper.com</a>.</p>
+            href="mailto:info@carloeusebideveloper.com">info@carloeusebideveloper.com</a>.</p>
 
     <h2>2. Dati che raccogliamo</h2>
     <ul>
@@ -135,7 +135,7 @@
         della data.</p>
 
     <h2>12. Contatti</h2>
-    <p>Per richieste sulla privacy: <a href="mailto:info@.carloeusebideveloper.com">info@.carloeusebideveloper.com</a>.
+    <p>Per richieste sulla privacy: <a href="mailto:info@carloeusebideveloper.com">info@carloeusebideveloper.com</a>.
     </p>
 
     <p class="muted">Ultimo aggiornamento: {{ \Carbon\Carbon::now()->toDateString() }}</p>
