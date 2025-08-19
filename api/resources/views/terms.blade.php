@@ -134,7 +134,7 @@
     <p>Per domande sui termini: <a href="mailto:info@carloeusebideveloper.com">info@carloeusebideveloper.com</a>.
     </p>
 
-    <p class="muted">Ultimo aggiornamento: {{ \Carbon\Carbon::now()->toDateString() }}</p>
+    <p class="muted">Ultimo aggiornamento: 19/08/2025</p>
 </div>
 </body>
 </html>
