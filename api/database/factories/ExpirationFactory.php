@@ -23,7 +23,8 @@ final class ExpirationFactory extends Factory
         return [
             'expires_at' => now()->addMonth()->startOfDay(), //
             'quantity' => fake()->randomNumber(),
-            'notification_method' => fake()->randomElement(NotificationMethod::cases()),
+            'notification_method' => NotificationMethod::Both,
+            'notification_days_before' => 2,
             'notes' => fake()->word(),
             'created_at' => Carbon::now(),
             'updated_at' => Carbon::now(),

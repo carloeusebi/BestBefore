@@ -8,7 +8,7 @@ use App\Models\Product;
 use App\Models\User;
 use App\Notifications\AggregatedExpirationsNotification;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Notification as NotificationFacade;
+use Illuminate\Support\Facades\Notification;
 
 use function Pest\Laravel\artisan;
 
@@ -51,11 +51,11 @@ it('aggregates expirations per user for the day window and sends a single notifi
         'notification_method' => NotificationMethod::None,
     ]);
 
-    NotificationFacade::fake();
+    Notification::fake();
 
     artisan('expirations:notify')->assertSuccessful();
 
-    NotificationFacade::assertSentTo($user, AggregatedExpirationsNotification::class, function (AggregatedExpirationsNotification $notification) use ($user): bool {
+    Notification::assertSentTo($user, AggregatedExpirationsNotification::class, function (AggregatedExpirationsNotification $notification) use ($user): bool {
         expect($notification->expirations)->toHaveCount(2);
 
         $channels = $notification->via($user);
@@ -81,11 +81,11 @@ it('respects user preferences for channels regardless of expiration method', fun
         'notification_method' => NotificationMethod::Email,
     ]);
 
-    NotificationFacade::fake();
+    Notification::fake();
 
     artisan('expirations:notify')->assertSuccessful();
 
-    NotificationFacade::assertSentTo($user, AggregatedExpirationsNotification::class, function (AggregatedExpirationsNotification $n) use ($user): bool {
+    Notification::assertSentTo($user, AggregatedExpirationsNotification::class, function (AggregatedExpirationsNotification $n) use ($user): bool {
         expect($n->via($user))->toBe(['mail']);
 
         return true;
@@ -106,13 +106,25 @@ it('sends push only when user prefers push', function (): void {
         'notification_method' => NotificationMethod::Push,
     ]);
 
-    NotificationFacade::fake();
+    Notification::fake();
 
     artisan('expirations:notify')->assertSuccessful();
 
-    NotificationFacade::assertSentTo($user, AggregatedExpirationsNotification::class, function (AggregatedExpirationsNotification $n) use ($user): bool {
+    Notification::assertSentTo($user, AggregatedExpirationsNotification::class, function (AggregatedExpirationsNotification $n) use ($user): bool {
         expect($n->via($user))->toBe(['expo']);
 
         return true;
     });
+});
+
+it('does not notifies today\'s expirations "days" times', function (): void {
+    Notification::fake();
+    $user = User::factory()->create();
+
+    Expiration::factory()->for($user)->create(['created_at' => now()->subDays(3), 'notification_days_before' => 3, 'expires_at' => now()->addDays(3)]);
+    Expiration::factory()->for($user)->create(['created_at' => now()->subDays(2), 'notification_days_before' => 2, 'expires_at' => today()]);
+
+    artisan('expirations:notify')->assertSuccessful();
+
+    Notification::assertCount(1);
 });

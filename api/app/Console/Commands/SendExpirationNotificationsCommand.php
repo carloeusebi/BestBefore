@@ -40,36 +40,36 @@ final class SendExpirationNotificationsCommand extends Command
 
         $totalNotified = 0;
 
-        foreach ($days as $day) {
-            $targetDate = now()->startOfDay()->addDays((int) $day);
+        $expirations = Expiration::query()
+            ->with(['user', 'product'])
+            ->where(function (Builder $query) use ($days): void {
+                $query->where(function (Builder $query) use ($days): void {
+                    foreach ($days as $day) {
+                        $targetDate = now()->startOfDay()->addDays((int) $day);
 
-            $expirations = Expiration::query()
-                ->with(['user', 'product'])
-                ->where(function (Builder $query) use ($day, $targetDate): void {
-                    $query->where(function (Builder $query) use ($day, $targetDate): void {
                         $query->whereDate('expires_at', $targetDate)
                             ->where('notification_days_before', (int) $day);
-                    })
-                        ->orWhereToday('expires_at');
+                    }
                 })
-                ->whereIn('notification_method', [
-                    NotificationMethod::Email,
-                    NotificationMethod::Push,
-                    NotificationMethod::Both,
-                ])
-                ->get();
+                    ->orWhereToday('expires_at');
+            })
+            ->whereIn('notification_method', [
+                NotificationMethod::Email,
+                NotificationMethod::Push,
+                NotificationMethod::Both,
+            ])
+            ->get();
 
-            $byUser = $expirations->groupBy('user_id');
+        $byUser = $expirations->groupBy('user_id');
 
-            foreach ($byUser as $group) {
-                $user = $group->first()?->user;
-                if ($user === null) {
-                    continue;
-                }
-
-                Notification::send($user, new AggregatedExpirationsNotification($group));
-                $totalNotified++;
+        foreach ($byUser as $group) {
+            $user = $group->first()?->user;
+            if ($user === null) {
+                continue;
             }
+
+            Notification::send($user, new AggregatedExpirationsNotification($group));
+            $totalNotified++;
         }
 
         $this->components->info("Notifications dispatched: {$totalNotified}");
