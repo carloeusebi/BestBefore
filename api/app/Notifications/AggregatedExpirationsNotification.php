@@ -55,11 +55,16 @@ final class AggregatedExpirationsNotification extends Notification
         $this->expirations
             ->sortBy(fn (Expiration $e) => $e->expires_at)
             ->each(function (Expiration $e) use (&$mail): void {
+                $days = (int) now()->diffInDays($e->expires_at);
+
                 $name = $e->product->name ?? 'Prodotto';
                 $brand = $e->product->brand ?? '';
                 $qty = $e->quantity !== null ? " (q.tà: {$e->quantity})" : '';
                 $date = $e->expires_at->format('d/m/Y');
-                $mail->line("• {$name} {$brand} {$qty} — Scade il {$date}");
+
+                $days > 0
+                    ? $mail->line("• {$name} {$brand} {$qty} — Scade il {$date}.")
+                    : $mail->line("• {$name} {$brand} {$qty} — Scade oggi.");
             });
 
         $mail->line('Apri l’app per maggiori dettagli o per aggiornare le scadenze.');
@@ -75,7 +80,7 @@ final class AggregatedExpirationsNotification extends Notification
             /** @var Expiration $e */
             $e = $this->expirations->first();
             $name = $e->product->name ?? 'Prodotto';
-            $days = (int) ($e->notification_days_before ?? 0);
+            $days = (int) now()->diffInDays($e->expires_at);
             $date = $e->expires_at->format('d/m/Y');
 
             $title = $days > 0
